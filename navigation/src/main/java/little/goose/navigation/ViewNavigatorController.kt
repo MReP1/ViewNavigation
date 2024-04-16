@@ -1,7 +1,5 @@
 package little.goose.navigation
 
-import android.os.Bundle
-
 fun ViewNavigatorController(): ViewNavigatorController = ViewNavigatorController.newInstance()
 
 sealed interface ViewNavigatorController {
