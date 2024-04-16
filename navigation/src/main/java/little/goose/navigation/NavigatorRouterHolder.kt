@@ -26,44 +26,46 @@ internal class NavigatorRouterHolder(override val context: Context) : NavigatorS
         builder: ViewNavigatorController.(ViewStackEntry) -> T
     ) {
         var cachedView: T? = null
-        var entry: ViewStackEntry? = null
-        routerMap[route] = NavViewRouter(route, cached) { bundle, updateBundle ->
-            if (entry == null) {
-                entry = ViewStackEntry(bundle, Job())
-            }
-            val realEntry = entry!!
-            if (updateBundle) {
-                realEntry.args = bundle
-            }
-            if (cached && cachedView != null) {
-                cachedView!!.also { (it.parent as? ViewGroup)?.removeView(it) }
-            } else {
-                builder(realEntry).also { view ->
-                    if (cached) {
-                        cachedView = view
-                    }
+        val entry = ViewStackEntry(null, Job())
+        routerMap[route] = NavViewRouter(
+            route = route,
+            cached = cached,
+            getArgs = entry::args::get,
+            setArgs = entry::args::set,
+            viewBuilder = { bundle, updateBundle ->
+                if (updateBundle) {
+                    entry.args = bundle
                 }
-            }.also { view ->
-                view.doOnAttach {
-                    if (!realEntry.job.isActive) {
-                        realEntry.job = Job()
+                if (cached && cachedView != null) {
+                    cachedView!!.also { (it.parent as? ViewGroup)?.removeView(it) }
+                } else {
+                    builder(entry).also { view ->
+                        if (cached) {
+                            cachedView = view
+                        }
                     }
-                    currentOnPop = { onPop?.invoke(view, it) ?: false }
-                    onAttach?.invoke(this@NavViewRouter, view, realEntry)
-                }
-                view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-                    override fun onViewAttachedToWindow(v: View) {
+                }.also { view ->
+                    view.doOnAttach {
+                        if (!entry.job.isActive) {
+                            entry.job = Job()
+                        }
+                        currentOnPop = { onPop?.invoke(view, it) ?: false }
+                        onAttach?.invoke(this@NavViewRouter, view, entry)
                     }
+                    view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+                        override fun onViewAttachedToWindow(v: View) {
+                        }
 
-                    @Suppress("UNCHECKED_CAST")
-                    override fun onViewDetachedFromWindow(v: View) {
-                        realEntry.job.cancel()
-                        ((v as? T) ?: cachedView)?.let { onDetach?.invoke(it, realEntry) }
-                        v.removeOnAttachStateChangeListener(this)
-                    }
-                })
+                        @Suppress("UNCHECKED_CAST")
+                        override fun onViewDetachedFromWindow(v: View) {
+                            entry.job.cancel()
+                            ((v as? T) ?: cachedView)?.let { onDetach?.invoke(it, entry) }
+                            v.removeOnAttachStateChangeListener(this)
+                        }
+                    })
+                }
             }
-        }
+        )
     }
 
     override fun <T : ViewBinding> navViewBinding(

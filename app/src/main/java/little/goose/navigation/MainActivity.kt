@@ -51,12 +51,19 @@ fun MainActivity.mainNavigator(): ViewNavigator {
         navController.pop()
     }
 
-    return ViewNavigator(this, navController, Route.SCREEN_ONE) {
+    return ViewNavigator(
+        navController = navController,
+        initRoute = Route.SCREEN_ONE,
+        name = "DemoRootNavigator"
+    ) {
 
         // Sample of Xml and ViewBinding
-        navViewBinding(Route.SCREEN_ONE, onAttach = { binding, entry ->
-            binding.tvTitle.text = entry.args?.getString(Key.SCREEN_ONE_TITLE) ?: "Untitled"
-        }) {
+        navViewBinding(
+            route = Route.SCREEN_ONE,
+            onAttach = { binding, entry ->
+                binding.tvTitle.text = entry.args?.getString(Key.SCREEN_ONE_TITLE) ?: "Untitled"
+            }
+        ) {
             ScreenOneBinding.inflate(layoutInflater).apply {
                 button.setOnClickListener {
                     navigateTo(Route.SCREEN_TWO) {
@@ -82,12 +89,14 @@ fun MainActivity.mainNavigator(): ViewNavigator {
 
         // Sample of a ViewController with coroutine and ViewModel logic.
         navViewController(Route.SCREEN_COROUTINE_SAMPLE) {
-            CoroutineSampleViewController(this@mainNavigator, popToOneWithParams = {
-                popTo(
-                    Route.SCREEN_ONE,
-                    args = bundleOf(Key.SCREEN_ONE_TITLE to "Title from other screen")
-                )
-            })
+            CoroutineSampleViewController(
+                activity = this@mainNavigator,
+                popToOneWithParams = {
+                    popTo(Route.SCREEN_ONE) {
+                        args = bundleOf(Key.SCREEN_ONE_TITLE to "Title from other screen")
+                    }
+                }
+            )
         }
     }
 }

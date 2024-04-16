@@ -14,6 +14,7 @@ import little.goose.navigation.ViewController
 import little.goose.navigation.ViewStackEntry
 import little.goose.navigation.design.Theme
 import little.goose.navigation.util.addButton
+import little.goose.navigation.util.dp
 
 class CoroutineSampleViewController(
     private val activity: MainActivity,
@@ -32,7 +33,13 @@ class CoroutineSampleViewController(
         return LinearLayout(activity).apply {
             gravity = Gravity.CENTER
             orientation = LinearLayout.VERTICAL
-            addView(tvCount)
+            addView(
+                tvCount,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { setMargins(16.dp, 16.dp, 16.dp, 16.dp) }
+            )
             addButton(text = "pop to screen one with params", onClick = popToOneWithParams)
         }
     }

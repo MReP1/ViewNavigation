@@ -2,9 +2,13 @@ package little.goose.navigation
 
 import android.os.Bundle
 
-fun ViewNavigatorController(): ViewNavigatorController = ViewNavigatorControllerImpl()
+fun ViewNavigatorController(): ViewNavigatorController = ViewNavigatorController.newInstance()
 
 sealed interface ViewNavigatorController {
+
+    companion object {
+        fun newInstance(): ViewNavigatorController = ViewNavigatorControllerImpl()
+    }
 
     /**
      * Navigate to target route view.
@@ -26,10 +30,10 @@ sealed interface ViewNavigatorController {
      * Pop to target route contained in view stack.
      *
      * @param route target route
-     * @param args arguments to build view or update view
+     * @param paramsBuilder build params
      * @return
      */
-    fun popTo(route: String, args: Bundle? = null): Boolean
+    fun popTo(route: String, paramsBuilder: NavigateParams.() -> Unit = {}): Boolean
 
 }
 
@@ -44,7 +48,7 @@ internal class ViewNavigatorControllerImpl : ViewNavigatorController {
     )? = null
 
     internal var onPopToCall: (
-        (String, Bundle?) -> Boolean
+        (String, paramsBuilder: NavigateParams.() -> Unit) -> Boolean
     )? = null
 
     override fun navigateTo(route: String, paramsBuilder: NavigateParams.() -> Unit): Boolean {
@@ -55,8 +59,8 @@ internal class ViewNavigatorControllerImpl : ViewNavigatorController {
         return onPopCall?.invoke() ?: false
     }
 
-    override fun popTo(route: String, args: Bundle?): Boolean {
-        return onPopToCall?.invoke(route, args) ?: false
+    override fun popTo(route: String, paramsBuilder: NavigateParams.() -> Unit): Boolean {
+        return onPopToCall?.invoke(route, paramsBuilder) ?: false
     }
 
 }

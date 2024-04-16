@@ -2,19 +2,58 @@ package little.goose.navigation
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import androidx.activity.ComponentActivity
 import androidx.annotation.MainThread
+import androidx.fragment.app.Fragment
+import androidx.savedstate.SavedStateRegistry
 import java.util.LinkedList
 
-fun ViewNavigator(
-    context: Context,
+private const val TAG = "ViewNavigator"
+
+@MainThread
+fun ComponentActivity.ViewNavigator(
     navController: ViewNavigatorController,
     initRoute: String,
+    name: String,
+    container: ViewContainer<out View> = HorizontalSlideAnimatedContentLayout(this),
+    initArgs: Bundle? = null,
+    builder: NavigatorScope.() -> Unit
+): ViewNavigator = ViewNavigatorImpl(
+    this, savedStateRegistry, name,
+    navController as ViewNavigatorControllerImpl,
+    container, initRoute, initArgs, builder
+)
+
+@MainThread
+fun Fragment.ViewNavigator(
+    navController: ViewNavigatorController,
+    initRoute: String,
+    name: String,
+    container: ViewContainer<out View> = HorizontalSlideAnimatedContentLayout(requireContext()),
+    initArgs: Bundle? = null,
+    builder: NavigatorScope.() -> Unit
+): ViewNavigator = ViewNavigatorImpl(
+    requireContext(), savedStateRegistry, name,
+    navController as ViewNavigatorControllerImpl,
+    container, initRoute, initArgs, builder
+)
+
+@MainThread
+fun ViewNavigator(
+    context: Context,
+    name: String,
+    navController: ViewNavigatorController,
+    initRoute: String,
+    savedStateRegistry: SavedStateRegistry? = null,
     container: ViewContainer<out View> = HorizontalSlideAnimatedContentLayout(context),
     initArgs: Bundle? = null,
     builder: NavigatorScope.() -> Unit
 ): ViewNavigator = ViewNavigatorImpl(
-    context, navController as ViewNavigatorControllerImpl, container, initRoute, initArgs, builder
+    context, savedStateRegistry, name,
+    navController as ViewNavigatorControllerImpl,
+    container, initRoute, initArgs, builder
 )
 
 sealed interface ViewNavigator {
@@ -38,6 +77,11 @@ sealed interface ViewNavigator {
      * Foreground view
      */
     val currentView: View?
+
+    /**
+     * Navigator controller
+     */
+    val navigatorController: ViewNavigatorController
 
     /**
      * Default on pop listener, call when all router's onPop function return false.
@@ -81,9 +125,11 @@ sealed interface ViewNavigator {
 }
 
 @MainThread
-internal class ViewNavigatorImpl(
+private class ViewNavigatorImpl(
     context: Context,
-    private val navigatorController: ViewNavigatorControllerImpl,
+    savedStateRegistry: SavedStateRegistry?,
+    name: String,
+    override val navigatorController: ViewNavigatorControllerImpl,
     private val viewContainer: ViewContainer<out View>,
     initRoute: String,
     initArgs: Bundle? = null,
@@ -102,6 +148,8 @@ internal class ViewNavigatorImpl(
 
     private val onPopOutListeners: LinkedHashSet<(() -> Boolean)> = LinkedHashSet()
 
+    private var restoreRouter: NavViewRouter? = null
+
     override val viewStackSize: Int get() = routerStack.size
 
     override val currentRoute: String? get() = currentRouter?.route
@@ -110,15 +158,23 @@ internal class ViewNavigatorImpl(
 
     override var defaultOnPopListener: ((String?) -> Boolean)? = null
 
-    private var restoreRouter: NavViewRouter? = null
-
     init {
         navigatorController.onPopCall = ::pop
         navigatorController.onPopToCall = ::popTo
         navigatorController.onNavigateToCall = { r, b -> navigateTo(r, animate = true, b) }
         builder(navigatorRouterHolder)
-        navigateTo(initRoute, animate = false) {
-            args = initArgs
+        val restoreRoute = savedStateRegistry?.let {
+            initSavedStateAndGetRestoreRouter(
+                name, savedStateRegistry, routerStack,
+                navigatorRouterHolder::getRouter
+            )
+        }
+        if (restoreRoute == null) {
+            navigateTo(initRoute, animate = false) { args = initArgs }
+        } else {
+            viewContainer.setView(
+                restoreRoute.viewBuilder(navigatorController, null, false)
+            )
         }
         containerView.addOnAttachStateChangeListener(
             object : View.OnAttachStateChangeListener {
@@ -146,7 +202,7 @@ internal class ViewNavigatorImpl(
             return false
         }
         val router = navigatorRouterHolder.getRouter(route)
-        val params = NavigateParams().apply(paramsBuilder)
+        val params = NavigateParams(paramsBuilder)
         val view = router.viewBuilder(navigatorController, params.args, true)
         if (!animate) {
             viewContainer.setView(view = view)
@@ -180,7 +236,7 @@ internal class ViewNavigatorImpl(
 
     private fun popTo(
         route: String,
-        args: Bundle?
+        paramsBuilder: NavigateParams.() -> Unit
     ): Boolean {
         val current = currentRouter
         if (current?.route == route && current.cached) {
@@ -199,7 +255,8 @@ internal class ViewNavigatorImpl(
             router = routerStack.peek()
         } while (router != targetRouter && routerStack.size > 1)
         router?.let {
-            val view = it.viewBuilder(navigatorController, args, args != null)
+            val params = NavigateParams(paramsBuilder)
+            val view = it.viewBuilder(navigatorController, params.args, params.args != null)
             viewContainer.animateChangeView(view, forward = false)
             for (listener in rougeChangeListeners) {
                 listener.onRouterChange(current?.route, router.route)
@@ -236,3 +293,37 @@ internal class ViewNavigatorImpl(
 
 }
 
+private const val KEY_STACK = "stack"
+
+private inline fun initSavedStateAndGetRestoreRouter(
+    name: String,
+    savedStateRegistry: SavedStateRegistry,
+    routerStack: LinkedList<NavViewRouter>,
+    getRouter: (String) -> NavViewRouter
+): NavViewRouter? {
+    savedStateRegistry.registerSavedStateProvider(name) {
+        Bundle().apply {
+            putStringArray(KEY_STACK, routerStack.map(NavViewRouter::route).toTypedArray())
+            val stringArrays = arrayOfNulls<String>(routerStack.size)
+            routerStack.forEachIndexed { index: Int, stack: NavViewRouter ->
+                stringArrays[index] = stack.route
+                val args = stack.getArgs()
+                if (args != null) {
+                    val key = "${stack.route}_$index"
+                    Log.d(TAG, "save bundle key: $key, save args: $args")
+                    putBundle(key, args)
+                }
+            }
+        }
+    }
+    val restoreBundle = savedStateRegistry.consumeRestoredStateForKey(name)
+    restoreBundle?.getStringArray(KEY_STACK)?.forEachIndexed { index, route ->
+        val router: NavViewRouter = getRouter(route)
+        val key = "${route}_$index"
+        val restoredArgs = restoreBundle.getBundle(key)
+        Log.d(TAG, "get bundle key: $key, restore args: $restoredArgs")
+        router.setArgs(restoredArgs)
+        routerStack.add(router)
+    }
+    return routerStack.peek()
+}
