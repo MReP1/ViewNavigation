@@ -17,7 +17,7 @@ fun ComponentActivity.ViewNavigator(
     navController: ViewNavigatorController,
     initRoute: String,
     name: String,
-    container: ViewContainer<out View> = HorizontalSlideAnimatedContentLayout(this),
+    container: ViewContainer<out View> = ViewNavigationContainerLayout(this),
     initArgs: Bundle? = null,
     builder: NavigatorScope.() -> Unit
 ): ViewNavigator = ViewNavigatorImpl(
@@ -31,7 +31,7 @@ fun Fragment.ViewNavigator(
     navController: ViewNavigatorController,
     initRoute: String,
     name: String,
-    container: ViewContainer<out View> = HorizontalSlideAnimatedContentLayout(requireContext()),
+    container: ViewContainer<out View> = ViewNavigationContainerLayout(requireContext()),
     initArgs: Bundle? = null,
     builder: NavigatorScope.() -> Unit
 ): ViewNavigator = ViewNavigatorImpl(
@@ -47,7 +47,7 @@ fun ViewNavigator(
     navController: ViewNavigatorController,
     initRoute: String,
     savedStateRegistry: SavedStateRegistry? = null,
-    container: ViewContainer<out View> = HorizontalSlideAnimatedContentLayout(context),
+    container: ViewContainer<out View> = ViewNavigationContainerLayout(context),
     initArgs: Bundle? = null,
     builder: NavigatorScope.() -> Unit
 ): ViewNavigator = ViewNavigatorImpl(

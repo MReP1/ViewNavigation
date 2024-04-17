@@ -12,4 +12,6 @@ interface ViewContainer<V: View> {
 
     fun animateChangeView(view: View, forward: Boolean)
 
+    fun setAnimationParams(animationParams: AnimationParams)
+
 }

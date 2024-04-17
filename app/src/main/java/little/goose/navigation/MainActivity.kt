@@ -1,5 +1,6 @@
 package little.goose.navigation
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
