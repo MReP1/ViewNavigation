@@ -1,74 +1,26 @@
 package little.goose.navigation
 
 import android.animation.TimeInterpolator
-import android.view.View
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
-
-fun interface ViewNavAnimation {
-
-    /**
-     * On animate
-     *
-     * @param view the view you need to operate.
-     * @param progress from 0 to 1.
-     * @param forward flag that is forward or not.
-     * @param width with of parent.
-     * @param height height of parent.
-     */
-    fun onAnimate(
-        view: View,
-        progress: Float,
-        forward: Boolean,
-        width: Int,
-        height: Int
-    )
-
-    companion object {
-
-        val HorizontalInViewAnimation: ViewNavAnimation =
-            ViewNavAnimation { view, progress, forward, width, _ ->
-                val distance = width * 1F
-                view.translationX = distance * (1 - progress) * (if (forward) 1 else -1)
-            }
-
-        val HorizontalOutViewAnimation: ViewNavAnimation =
-            ViewNavAnimation { view, progress, forward, width, _ ->
-                val distance = width * 1F
-                view.translationX = distance * progress * (if (forward) 1 else -1)
-            }
-
-        val FadeInViewAnimation: ViewNavAnimation =
-            ViewNavAnimation { view, progress, _, _, _ ->
-                view.alpha = progress
-            }
-
-        val FadeOutViewAnimation: ViewNavAnimation =
-            ViewNavAnimation { view, progress, _, _, _ ->
-                view.alpha = 1 - progress
-            }
-
-    }
-
-}
 
 class AnimationParams private constructor(
     val duration: Long,
     val interpolator: TimeInterpolator? = null,
-    val inAnimations: List<ViewNavAnimation>? = null,
-    val outAnimations: List<ViewNavAnimation>? = null
+    val inAnimations: List<NavViewAnimation>? = null,
+    val outAnimations: List<NavViewAnimation>? = null
 ) {
 
     class Builder(private var duration: Long = 400L) {
 
         private var interpolator: TimeInterpolator = LinearOutSlowInInterpolator()
 
-        private val inAnimations = mutableListOf<ViewNavAnimation>()
+        private val inAnimations = mutableListOf<NavViewAnimation>()
 
-        private val outAnimations = mutableListOf<ViewNavAnimation>()
+        private val outAnimations = mutableListOf<NavViewAnimation>()
 
         fun addViewNavAnimation(
-            inAnimation: ViewNavAnimation,
-            outAnimation: ViewNavAnimation
+            inAnimation: NavViewAnimation,
+            outAnimation: NavViewAnimation
         ) = apply {
             inAnimations.add(inAnimation)
             outAnimations.add(outAnimation)
@@ -104,12 +56,12 @@ class AnimationParams private constructor(
             duration = 400,
             interpolator = LinearOutSlowInInterpolator(),
             inAnimations = listOf(
-                ViewNavAnimation.HorizontalInViewAnimation,
-                ViewNavAnimation.FadeInViewAnimation
+                NavViewAnimation.HorizontalInViewAnimation,
+                NavViewAnimation.FadeInViewAnimation
             ),
             outAnimations = listOf(
-                ViewNavAnimation.HorizontalOutViewAnimation,
-                ViewNavAnimation.FadeOutViewAnimation
+                NavViewAnimation.HorizontalOutViewAnimation,
+                NavViewAnimation.FadeOutViewAnimation
             )
         )
 

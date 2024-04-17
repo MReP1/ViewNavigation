@@ -104,7 +104,7 @@ class ViewNavigationContainerLayout @JvmOverloads constructor(
         view: View,
         progress: Float,
         forward: Boolean,
-        animations: List<ViewNavAnimation>
+        animations: List<NavViewAnimation>
     ) {
         animations.forEach { animate ->
             animate.onAnimate(view, progress, forward, width, height)
