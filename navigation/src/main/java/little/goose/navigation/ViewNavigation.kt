@@ -305,11 +305,11 @@ private inline fun initSavedStateAndGetRestoreRouter(
         Bundle().apply {
             putStringArray(KEY_STACK, routerStack.map(NavViewRouter::route).toTypedArray())
             val stringArrays = arrayOfNulls<String>(routerStack.size)
-            routerStack.forEachIndexed { index: Int, stack: NavViewRouter ->
-                stringArrays[index] = stack.route
-                val args = stack.getArgs()
+            routerStack.forEachIndexed { index: Int, router: NavViewRouter ->
+                stringArrays[index] = router.route
+                val args = router.getArgs()
                 if (args != null) {
-                    val key = "${stack.route}_$index"
+                    val key = "${router.route}_$index"
                     Log.d(TAG, "save bundle key: $key, save args: $args")
                     putBundle(key, args)
                 }
