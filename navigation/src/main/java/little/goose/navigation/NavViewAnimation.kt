@@ -1,5 +1,6 @@
 package little.goose.navigation
 
+import android.util.LayoutDirection
 import android.view.View
 
 fun interface NavViewAnimation {
@@ -9,40 +10,65 @@ fun interface NavViewAnimation {
      *
      * @param view the view you need to operate.
      * @param progress from 0 to 1.
-     * @param forward flag that is forward or not.
      * @param width with of parent.
      * @param height height of parent.
      */
     fun onAnimate(
         view: View,
         progress: Float,
-        forward: Boolean,
         width: Int,
         height: Int
     )
 
     companion object {
 
-        val HorizontalInViewAnimation: NavViewAnimation =
-            NavViewAnimation { view, progress, forward, width, _ ->
-                val distance = width * 1F
-                view.translationX = distance * (1 - progress) * (if (forward) 1 else -1)
+        private val View.layoutDirectionFlag: Float
+            get() = if (
+                layoutDirection == LayoutDirection.RTL
+            ) -1F else 1F
+
+        val HorizontalEnterViewAnimation: NavViewAnimation =
+            NavViewAnimation { view, progress, width, _ ->
+                val distance = width * 1F * view.layoutDirectionFlag
+                view.translationX = distance * (1F - progress)
             }
 
-        val HorizontalOutViewAnimation: NavViewAnimation =
-            NavViewAnimation { view, progress, forward, width, _ ->
-                val distance = width * 1F
-                view.translationX = distance * progress * (if (forward) 1 else -1)
+        val HorizontalExitViewAnimation: NavViewAnimation =
+            NavViewAnimation { view, progress, width, _ ->
+                val distance = width * 1F * view.layoutDirectionFlag
+                view.translationX = distance * progress
             }
 
-        val FadeInViewAnimation: NavViewAnimation =
-            NavViewAnimation { view, progress, _, _, _ ->
+        val HorizontalPopEnterViewAnimation: NavViewAnimation =
+            NavViewAnimation { view, progress, width, _ ->
+                val distance = width * -1F * view.layoutDirectionFlag
+                view.translationX = distance * (1F - progress)
+            }
+
+        val HorizontalPopExitViewAnimation: NavViewAnimation =
+            NavViewAnimation { view, progress, width, _ ->
+                val distance = width * -1F * view.layoutDirectionFlag
+                view.translationX = distance * progress
+            }
+
+        val FadeEnterViewAnimation: NavViewAnimation =
+            NavViewAnimation { view, progress, _, _ ->
                 view.alpha = progress
             }
 
-        val FadeOutViewAnimation: NavViewAnimation =
-            NavViewAnimation { view, progress, _, _, _ ->
-                view.alpha = 1 - progress
+        val FadeExitViewAnimation: NavViewAnimation =
+            NavViewAnimation { view, progress, _, _ ->
+                view.alpha = 1F - progress
+            }
+
+        val FadePopEnterViewAnimation: NavViewAnimation =
+            NavViewAnimation { view, progress, _, _ ->
+                view.alpha = progress
+            }
+
+        val FadePopExitViewAnimation: NavViewAnimation =
+            NavViewAnimation { view, progress, _, _ ->
+                view.alpha = 1F - progress
             }
 
     }

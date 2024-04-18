@@ -47,8 +47,10 @@ class ViewNavigationContainerLayout @JvmOverloads constructor(
         val params = animationParams
         if (!animate
             || params.duration <= 0L
-            || params.inAnimations.isNullOrEmpty()
-            || params.outAnimations.isNullOrEmpty()
+            || params.enterAnimations == null
+            || params.exitAnimations == null
+            || params.popEnterAnimations == null
+            || params.popExitAnimations == null
         ) {
             currentView?.takeIf { it.parent == this }?.let(::removeView)
             addView(
@@ -73,7 +75,14 @@ class ViewNavigationContainerLayout @JvmOverloads constructor(
         currentView?.let { oldView ->
             progressAnimator.addUpdateListener {
                 val progress = it.animatedValue as Float
-                onViewAnimate(oldView, progress, !forward, params.outAnimations)
+                val exitAnimations = if (forward) {
+                    params.popExitAnimations
+                } else {
+                    params.exitAnimations
+                }
+                exitAnimations.forEach { animation ->
+                    animation.onAnimate(oldView, progress, width, height)
+                }
             }
             progressAnimator.addListener(
                 onEnd = { removeView(oldView) },
@@ -92,23 +101,19 @@ class ViewNavigationContainerLayout @JvmOverloads constructor(
         currentView = view
         progressAnimator.addUpdateListener {
             val progress = it.animatedValue as Float
-            onViewAnimate(view, progress, forward, params.inAnimations)
+            val enterAnimations = if (forward) {
+                params.enterAnimations
+            } else {
+                params.popEnterAnimations
+            }
+            enterAnimations.forEach { animation ->
+                animation.onAnimate(view, progress, width, height)
+            }
             lastProgress = progress
         }
         progressAnimator.duration = params.duration
         progressAnimator.interpolator = FastOutSlowInInterpolator()
         progressAnimator.start()
-    }
-
-    private fun onViewAnimate(
-        view: View,
-        progress: Float,
-        forward: Boolean,
-        animations: List<NavViewAnimation>
-    ) {
-        animations.forEach { animate ->
-            animate.onAnimate(view, progress, forward, width, height)
-        }
     }
 
 }
