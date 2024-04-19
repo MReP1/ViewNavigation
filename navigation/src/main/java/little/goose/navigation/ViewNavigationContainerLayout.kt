@@ -23,13 +23,8 @@ class ViewNavigationContainerLayout @JvmOverloads constructor(
     override var currentView: View? = null
 
     private var progressAnimator: ValueAnimator? = null
-    private var lastProgress = 0F
 
-    private var animationParams = AnimationParams.DefaultAnimationParams
-
-    override fun setAnimationParams(animationParams: AnimationParams) {
-        this.animationParams = animationParams
-    }
+    override var animationParams = AnimationParams.DefaultAnimationParams
 
     override fun setView(view: View) {
         changeView(view, animate = false)
@@ -80,9 +75,7 @@ class ViewNavigationContainerLayout @JvmOverloads constructor(
                 } else {
                     params.exitAnimations
                 }
-                exitAnimations.forEach { animation ->
-                    animation.onAnimate(oldView, progress, width, height)
-                }
+                exitAnimations.onAnimate(oldView, progress, width, height)
             }
             progressAnimator.addListener(
                 onEnd = { removeView(oldView) },
@@ -106,10 +99,7 @@ class ViewNavigationContainerLayout @JvmOverloads constructor(
             } else {
                 params.popEnterAnimations
             }
-            enterAnimations.forEach { animation ->
-                animation.onAnimate(view, progress, width, height)
-            }
-            lastProgress = progress
+            enterAnimations.onAnimate(view, progress, width, height)
         }
         progressAnimator.duration = params.duration
         progressAnimator.interpolator = FastOutSlowInInterpolator()

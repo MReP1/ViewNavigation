@@ -8,10 +8,10 @@ interface ViewContainer<V: View> {
 
     val currentView: View?
 
+    var animationParams: AnimationParams
+
     fun setView(view: View)
 
     fun animateChangeView(view: View, forward: Boolean)
-
-    fun setAnimationParams(animationParams: AnimationParams)
 
 }

@@ -6,18 +6,18 @@ import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 class AnimationParams private constructor(
     val duration: Long,
     val interpolator: TimeInterpolator? = null,
-    val enterAnimations: List<NavViewAnimation>? = null,
-    val exitAnimations: List<NavViewAnimation>? = null,
-    val popEnterAnimations: List<NavViewAnimation>? = null,
-    val popExitAnimations: List<NavViewAnimation>? = null
+    val enterAnimations: NavViewAnimation? = null,
+    val exitAnimations: NavViewAnimation? = null,
+    val popEnterAnimations: NavViewAnimation? = null,
+    val popExitAnimations: NavViewAnimation? = null,
 ) {
 
     class Builder(private var duration: Long = 400L) {
         private var interpolator: TimeInterpolator = LinearOutSlowInInterpolator()
-        private var enterAnimations: MutableList<NavViewAnimation>? = null
-        private var exitAnimations: MutableList<NavViewAnimation>? = null
-        private var popEnterAnimations: MutableList<NavViewAnimation>? = null
-        private var popExitAnimations: MutableList<NavViewAnimation>? = null
+        private var enterAnimations: NavViewAnimation? = null
+        private var exitAnimations: NavViewAnimation? = null
+        private var popEnterAnimations: NavViewAnimation? = null
+        private var popExitAnimations: NavViewAnimation? = null
 
         fun addViewNavAnimation(
             enterAnimation: NavViewAnimation,
@@ -25,22 +25,14 @@ class AnimationParams private constructor(
             popEnterAnimation: NavViewAnimation,
             popExitAnimation: NavViewAnimation
         ) = apply {
-            if (enterAnimations == null) {
-                enterAnimations = mutableListOf()
-            }
-            enterAnimations?.add(enterAnimation)
-            if (exitAnimations == null) {
-                exitAnimations = mutableListOf()
-            }
-            exitAnimations?.add(exitAnimation)
-            if (popEnterAnimations == null) {
-                popEnterAnimations = mutableListOf()
-            }
-            popEnterAnimations?.add(popEnterAnimation)
-            if (popExitAnimations == null) {
-                popExitAnimations = mutableListOf()
-            }
-            popExitAnimations?.add(popExitAnimation)
+            enterAnimations =
+                enterAnimations?.let { it + enterAnimation } ?: enterAnimation
+            exitAnimations =
+                exitAnimations?.let { it + exitAnimation } ?: exitAnimation
+            popEnterAnimations =
+                popEnterAnimations?.let { it + popEnterAnimation } ?: popEnterAnimation
+            popExitAnimations =
+                popExitAnimations?.let { it + popExitAnimation } ?: popExitAnimation
         }
 
         fun setDuration(duration: Long) {
@@ -65,25 +57,37 @@ class AnimationParams private constructor(
 
     companion object {
 
+        const val DEFAULT_DURATION = 321L
+
         val DefaultAnimationParams = AnimationParams(
-            duration = 400,
+            duration = DEFAULT_DURATION,
             interpolator = LinearOutSlowInInterpolator(),
-            enterAnimations = listOf(
-                NavViewAnimation.HorizontalEnterViewAnimation,
-                NavViewAnimation.FadeEnterViewAnimation
-            ),
-            exitAnimations = listOf(
-                NavViewAnimation.HorizontalExitViewAnimation,
-                NavViewAnimation.FadeExitViewAnimation
-            ),
-            popEnterAnimations = listOf(
-                NavViewAnimation.HorizontalPopEnterViewAnimation,
-                NavViewAnimation.FadePopEnterViewAnimation
-            ),
-            popExitAnimations = listOf(
-                NavViewAnimation.HorizontalPopExitViewAnimation,
-                NavViewAnimation.FadePopExitViewAnimation
-            ),
+            enterAnimations = NavViewAnimation.HorizontalEnterViewAnimation
+                    + NavViewAnimation.FadeEnterViewAnimation,
+            exitAnimations = NavViewAnimation.HorizontalExitViewAnimation
+                    + NavViewAnimation.FadeExitViewAnimation,
+            popEnterAnimations = NavViewAnimation.HorizontalPopEnterViewAnimation
+                    + NavViewAnimation.FadePopEnterViewAnimation,
+            popExitAnimations = NavViewAnimation.HorizontalPopExitViewAnimation
+                    + NavViewAnimation.FadePopExitViewAnimation
+        )
+
+        val HorizontalAnimationParams = AnimationParams(
+            duration = DEFAULT_DURATION,
+            interpolator = LinearOutSlowInInterpolator(),
+            enterAnimations = NavViewAnimation.HorizontalEnterViewAnimation,
+            exitAnimations = NavViewAnimation.HorizontalExitViewAnimation,
+            popEnterAnimations = NavViewAnimation.HorizontalPopEnterViewAnimation,
+            popExitAnimations = NavViewAnimation.HorizontalPopExitViewAnimation
+        )
+
+        val FadeAnimationParams = AnimationParams(
+            duration = DEFAULT_DURATION,
+            interpolator = LinearOutSlowInInterpolator(),
+            enterAnimations = NavViewAnimation.FadeEnterViewAnimation,
+            exitAnimations = NavViewAnimation.FadeExitViewAnimation,
+            popEnterAnimations = NavViewAnimation.FadePopEnterViewAnimation,
+            popExitAnimations = NavViewAnimation.FadePopExitViewAnimation
         )
 
         val NoAnimationParams = AnimationParams(
