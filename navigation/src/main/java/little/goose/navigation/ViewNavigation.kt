@@ -159,6 +159,7 @@ private class ViewNavigatorImpl(
     override var defaultOnPopListener: ((String?) -> Boolean)? = null
 
     init {
+        containerView.tag = name
         navigatorController.onPopCall = ::pop
         navigatorController.onPopToCall = ::popTo
         navigatorController.onNavigateToCall = { r, b -> navigateTo(r, animate = true, b) }

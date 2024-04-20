@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "little.goose.navigation"
+    namespace = "little.goose.navigation.app"
     compileSdk = 34
 
     defaultConfig {
@@ -17,6 +17,11 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -52,5 +57,10 @@ dependencies {
     implementation(project(":navigation"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.test.junit.ext)
+    androidTestImplementation(libs.androidx.test.junit.ext.ktx)
     androidTestImplementation(libs.androidx.espresso.core)
 }

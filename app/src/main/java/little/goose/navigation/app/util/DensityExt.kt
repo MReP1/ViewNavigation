@@ -1,4 +1,4 @@
-package little.goose.navigation.util
+package little.goose.navigation.app.util
 
 import android.content.Context
 import android.view.View

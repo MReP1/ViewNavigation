@@ -1,4 +1,4 @@
-package little.goose.navigation
+package little.goose.navigation.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

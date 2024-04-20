@@ -1,4 +1,4 @@
-package little.goose.navigation.component
+package little.goose.navigation.app.component
 
 import android.view.Gravity
 import android.view.View
@@ -8,13 +8,14 @@ import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import little.goose.navigation.MainActivity
-import little.goose.navigation.MainViewModel
+import little.goose.navigation.app.MainActivity
+import little.goose.navigation.app.MainViewModel
 import little.goose.navigation.ViewController
 import little.goose.navigation.ViewStackEntry
-import little.goose.navigation.design.Theme
-import little.goose.navigation.util.addButton
-import little.goose.navigation.util.dp
+import little.goose.navigation.app.MainTag
+import little.goose.navigation.app.design.Theme
+import little.goose.navigation.app.util.addButton
+import little.goose.navigation.app.util.dp
 
 class CoroutineSampleViewController(
     private val activity: MainActivity,
@@ -40,7 +41,11 @@ class CoroutineSampleViewController(
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply { setMargins(16.dp, 16.dp, 16.dp, 16.dp) }
             )
-            addButton(text = "pop to screen one with params", onClick = popToOneWithParams)
+            addButton(
+                text = "pop to screen one with params",
+                onClick = popToOneWithParams,
+                tag = MainTag.ScreenThree.BUTTON_BACK_TO_SCREEN_ONE
+            )
         }
     }
 

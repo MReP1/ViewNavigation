@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tvTitle"
+        android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
@@ -15,7 +15,7 @@
         android:textSize="28sp" />
 
     <TextView
-        android:id="@+id/tvContent"
+        android:id="@+id/tv_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
@@ -31,9 +31,9 @@
         android:layout_weight="1" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/bt_nav_to_screen_two"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="60dp"
-        android:text="Navigato to Screen two" />
+        android:text="Navigate to Screen two" />
 </LinearLayout>

@@ -1,4 +1,4 @@
-package little.goose.navigation.design
+package little.goose.navigation.app.design
 
 import android.graphics.Color
 
