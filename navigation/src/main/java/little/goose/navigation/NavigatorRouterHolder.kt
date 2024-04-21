@@ -57,7 +57,7 @@ internal class NavigatorRouterHolder(
                 }
                 Log.d(TAG, "navView: getKey ${getKey(route, index)} ${entry.args}")
                 val cachedView = cachedViewMap[route] as? T
-                if (cached && cachedView != null) {
+                (if (cached && cachedView != null) {
                     cachedView.also { (it.parent as? ViewGroup)?.removeView(it) }
                 } else {
                     builder(entry).also { view ->
@@ -65,7 +65,7 @@ internal class NavigatorRouterHolder(
                             cachedViewMap[route] = view
                         }
                     }
-                }.also { view ->
+                }).also { view ->
                     view.doOnAttach {
                         if (!entry.job.isActive) {
                             entry.job = Job()
