@@ -138,7 +138,7 @@ private class ViewNavigatorImpl(
 
     override val containerView: View get() = viewContainer.container
 
-    private val navigatorRouterHolder = NavigatorRouterHolder(context)
+    private val navigatorRouterHolder = NavigatorRouterHolder(context, this)
 
     private val routerStack: LinkedList<NavViewRouter> = LinkedList()
 
@@ -147,8 +147,6 @@ private class ViewNavigatorImpl(
     private val rougeChangeListeners: LinkedHashSet<OnNavViewRouteChangeListener> = LinkedHashSet()
 
     private val onPopOutListeners: LinkedHashSet<(() -> Boolean)> = LinkedHashSet()
-
-    private var restoreRouter: NavViewRouter? = null
 
     override val viewStackSize: Int get() = routerStack.size
 
@@ -174,23 +172,11 @@ private class ViewNavigatorImpl(
             navigateTo(initRoute, animate = false) { args = initArgs }
         } else {
             viewContainer.setView(
-                restoreRoute.viewBuilder(navigatorController, null, false)
+                restoreRoute.viewBuilder(
+                    navigatorController, routerStack.lastIndex, null, false
+                )
             )
         }
-        containerView.addOnAttachStateChangeListener(
-            object : View.OnAttachStateChangeListener {
-                override fun onViewAttachedToWindow(v: View) {
-                    restoreRouter?.let {
-                        val view = it.viewBuilder.invoke(navigatorController, null, false)
-                        viewContainer.setView(view)
-                    }
-                }
-
-                override fun onViewDetachedFromWindow(v: View) {
-                    restoreRouter = currentRouter
-                }
-            }
-        )
     }
 
     private fun navigateTo(
@@ -204,7 +190,9 @@ private class ViewNavigatorImpl(
         }
         val router = navigatorRouterHolder.getRouter(route)
         val params = NavigateParams(paramsBuilder)
-        val view = router.viewBuilder(navigatorController, params.args, true)
+        val view = router.viewBuilder(
+            navigatorController, routerStack.lastIndex + 1, params.args, true
+        )
         if (!animate) {
             viewContainer.setView(view = view)
         } else {
@@ -217,9 +205,9 @@ private class ViewNavigatorImpl(
         return true
     }
 
-    private fun pop(): Boolean {
+    private fun pop(force: Boolean): Boolean {
         val targetRouter = routerStack.getOrNull(1)
-        if (checkCurrentViewIntercept(targetRouter?.route)) {
+        if (!force && checkCurrentViewIntercept(null)) {
             return true
         }
         if (routerStack.size == 1 || targetRouter == null) {
@@ -227,7 +215,8 @@ private class ViewNavigatorImpl(
         }
         val current = currentRouter
         routerStack.pop()
-        val view = targetRouter.viewBuilder(navigatorController, null, false)
+        val targetIndex = routerStack.lastIndex
+        val view = targetRouter.viewBuilder(navigatorController, targetIndex, null, false)
         viewContainer.animateChangeView(view, forward = false)
         for (listener in rougeChangeListeners) {
             listener.onRouterChange(current?.route, targetRouter.route)
@@ -237,6 +226,7 @@ private class ViewNavigatorImpl(
 
     private fun popTo(
         route: String,
+        force: Boolean,
         paramsBuilder: NavigateParams.() -> Unit
     ): Boolean {
         val current = currentRouter
@@ -247,17 +237,21 @@ private class ViewNavigatorImpl(
         if (routerStack.indexOf(targetRouter) == -1) {
             return false
         }
-        if (checkCurrentViewIntercept(targetRouter.route)) {
+        if (!force && checkCurrentViewIntercept(targetRouter.route)) {
             return true
         }
         var router: NavViewRouter?
+        var routerIndex: Int
         do {
             routerStack.pop()
             router = routerStack.peek()
+            routerIndex = routerStack.lastIndex
         } while (router != targetRouter && routerStack.size > 1)
         router?.let {
             val params = NavigateParams(paramsBuilder)
-            val view = it.viewBuilder(navigatorController, params.args, params.args != null)
+            val view = it.viewBuilder(
+                navigatorController, routerIndex, params.args, params.args != null
+            )
             viewContainer.animateChangeView(view, forward = false)
             for (listener in rougeChangeListeners) {
                 listener.onRouterChange(current?.route, router.route)
@@ -308,9 +302,10 @@ private inline fun initSavedStateAndGetRestoreRouter(
             val stringArrays = arrayOfNulls<String>(routerStack.size)
             routerStack.forEachIndexed { index: Int, router: NavViewRouter ->
                 stringArrays[index] = router.route
-                val args = router.getArgs()
+                val stackIndex = routerStack.lastIndex - index
+                val args = router.getArgs(stackIndex)
                 if (args != null) {
-                    val key = "${router.route}_$index"
+                    val key = "${router.route}_$stackIndex"
                     Log.d(TAG, "save bundle key: $key, save args: $args")
                     putBundle(key, args)
                 }
@@ -318,12 +313,14 @@ private inline fun initSavedStateAndGetRestoreRouter(
         }
     }
     val restoreBundle = savedStateRegistry.consumeRestoredStateForKey(name)
-    restoreBundle?.getStringArray(KEY_STACK)?.forEachIndexed { index, route ->
+    val stackArray = restoreBundle?.getStringArray(KEY_STACK) ?: return null
+    stackArray.forEachIndexed { index, route ->
         val router: NavViewRouter = getRouter(route)
-        val key = "${route}_$index"
+        val stackIndex = stackArray.lastIndex - index
+        val key = "${route}_$stackIndex"
         val restoredArgs = restoreBundle.getBundle(key)
         Log.d(TAG, "get bundle key: $key, restore args: $restoredArgs")
-        router.setArgs(restoredArgs)
+        router.setArgs(stackIndex, restoredArgs)
         routerStack.add(router)
     }
     return routerStack.peek()

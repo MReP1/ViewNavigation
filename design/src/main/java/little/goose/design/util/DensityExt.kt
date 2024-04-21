@@ -1,16 +1,8 @@
-package little.goose.navigation.app.util
+package little.goose.design.util
 
 import android.content.Context
 import android.view.View
 import kotlin.math.roundToInt
-
-context(Context)
-val Int.dp: Int
-    get() = getDpI(this)
-
-context(Context)
-val Float.dp: Float
-    get() = getDpF(this)
 
 context(View)
 val Int.dp: Int

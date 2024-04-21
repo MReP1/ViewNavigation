@@ -1,13 +1,21 @@
 package little.goose.navigation
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnAttach
 import androidx.viewbinding.ViewBinding
 import kotlinx.coroutines.Job
 
-internal class NavigatorRouterHolder(override val context: Context) : NavigatorScope {
+internal class NavigatorRouterHolder(
+    override val context: Context,
+    override val navigator: ViewNavigator
+) : NavigatorScope {
+
+    companion object {
+        private const val TAG = "NavigatorRouterHolder"
+    }
 
     private val routerMap = mutableMapOf<String, NavViewRouter>()
 
@@ -17,6 +25,18 @@ internal class NavigatorRouterHolder(override val context: Context) : NavigatorS
         return requireNotNull(routerMap[route]) { "You have not set route $route yet." }
     }
 
+    private val entryMap = mutableMapOf<String, ViewStackEntry>()
+    private val cachedViewMap = mutableMapOf<String, View>()
+
+    private fun getKey(route: String, index: Int) = "${route}_${index}"
+
+    private fun getEntry(route: String, index: Int): ViewStackEntry {
+        return entryMap[getKey(route, index)] ?: ViewStackEntry(null, Job()).also {
+            entryMap[getKey(route, index)] = it
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
     override fun <T : View> navView(
         route: String,
         cached: Boolean,
@@ -25,23 +45,24 @@ internal class NavigatorRouterHolder(override val context: Context) : NavigatorS
         onPop: ((T, String?) -> Boolean)?,
         builder: ViewNavigatorController.(ViewStackEntry) -> T
     ) {
-        var cachedView: T? = null
-        val entry = ViewStackEntry(null, Job())
         routerMap[route] = NavViewRouter(
             route = route,
             cached = cached,
-            getArgs = entry::args::get,
-            setArgs = entry::args::set,
-            viewBuilder = { bundle, updateBundle ->
+            getArgs = { index -> getEntry(route, index).args },
+            setArgs = { index, bundle -> getEntry(route, index).args = bundle },
+            viewBuilder = { index, bundle, updateBundle ->
+                val entry = getEntry(route, index)
                 if (updateBundle) {
                     entry.args = bundle
                 }
+                Log.d(TAG, "navView: getKey ${getKey(route, index)} ${entry.args}")
+                val cachedView = cachedViewMap["${route}_${index}"] as? T
                 if (cached && cachedView != null) {
-                    cachedView!!.also { (it.parent as? ViewGroup)?.removeView(it) }
+                    cachedView.also { (it.parent as? ViewGroup)?.removeView(it) }
                 } else {
                     builder(entry).also { view ->
                         if (cached) {
-                            cachedView = view
+                            cachedViewMap["${route}_${index}"] = view
                         }
                     }
                 }.also { view ->

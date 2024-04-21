@@ -8,6 +8,8 @@ interface NavigatorScope {
 
     val context: Context
 
+    val navigator: ViewNavigator
+
     fun <T : View> navView(
         route: String,
         cached: Boolean = true,

@@ -1,14 +1,13 @@
-package little.goose.navigation.app.util
+package little.goose.design.util
 
 import android.content.Context
 import android.view.Gravity
-import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Space
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import com.google.android.material.button.MaterialButton
-import little.goose.navigation.app.design.Theme
 
 inline fun linearLayout(
     context: Context,
@@ -27,27 +26,43 @@ inline fun linearLayout(
     }
 }
 
+inline fun frameLayout(
+    context: Context,
+    foregroundGravity: Int = Gravity.CENTER,
+    tag: Any? = null,
+    builder: FrameLayout.() -> Unit
+): FrameLayout {
+    return FrameLayout(context).apply {
+        this.foregroundGravity = foregroundGravity
+        if (tag != null) {
+            this.tag = tag
+        }
+        builder()
+    }
+}
+
 inline fun LinearLayout.addText(
     text: String,
-    @ColorInt textColor: Int = Theme.Palette.Primary,
+    @ColorInt textColor: Int = little.goose.design.theme.Theme.Palette.Primary,
     textSize: Float = 16F,
     tag: Any? = null,
     layoutParams: LinearLayout.LayoutParams.() -> Unit = {}
-) {
+): TextView {
+    val textView = TextView(context).apply {
+        this.textSize = textSize
+        setTextColor(textColor)
+        this.text = text
+        if (tag != null) {
+            this.tag = tag
+        }
+    }
     addView(
-        TextView(context).apply {
-            this.textSize = textSize
-            setTextColor(textColor)
-            this.text = text
-            if (tag != null) {
-                this.tag = tag
-            }
-        },
-        LinearLayout.LayoutParams(
+        textView, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply(layoutParams)
     )
+    return textView
 }
 
 inline fun LinearLayout.addButton(

@@ -20,18 +20,26 @@ sealed interface ViewNavigatorController {
     /**
      * Pop current view.
      *
+     * @param force flag that ignore sub navigation's onPop
      * @return
      */
-    fun pop(): Boolean
+    fun pop(
+        force: Boolean = false
+    ): Boolean
 
     /**
      * Pop to target route contained in view stack.
      *
      * @param route target route
+     * @param force flag that ignore sub navigation's onPop
      * @param paramsBuilder build params
      * @return
      */
-    fun popTo(route: String, paramsBuilder: NavigateParams.() -> Unit = {}): Boolean
+    fun popTo(
+        route: String,
+        force: Boolean = false,
+        paramsBuilder: NavigateParams.() -> Unit = {}
+    ): Boolean
 
 }
 
@@ -42,23 +50,27 @@ internal class ViewNavigatorControllerImpl : ViewNavigatorController {
     )? = null
 
     internal var onPopCall: (
-        () -> Boolean
+        (Boolean) -> Boolean
     )? = null
 
     internal var onPopToCall: (
-        (String, paramsBuilder: NavigateParams.() -> Unit) -> Boolean
+        (String, Boolean, paramsBuilder: NavigateParams.() -> Unit) -> Boolean
     )? = null
 
     override fun navigateTo(route: String, paramsBuilder: NavigateParams.() -> Unit): Boolean {
         return onNavigateToCall?.invoke(route, paramsBuilder) ?: false
     }
 
-    override fun pop(): Boolean {
-        return onPopCall?.invoke() ?: false
+    override fun pop(force: Boolean): Boolean {
+        return onPopCall?.invoke(force) ?: false
     }
 
-    override fun popTo(route: String, paramsBuilder: NavigateParams.() -> Unit): Boolean {
-        return onPopToCall?.invoke(route, paramsBuilder) ?: false
+    override fun popTo(
+        route: String,
+        force: Boolean,
+        paramsBuilder: NavigateParams.() -> Unit
+    ): Boolean {
+        return onPopToCall?.invoke(route, force, paramsBuilder) ?: false
     }
 
 }

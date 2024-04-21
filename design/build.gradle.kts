@@ -1,27 +1,19 @@
 plugins {
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
 }
 
 android {
-    namespace = "little.goose.navigation.app"
+    namespace = "little.goose.design"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "little.goose.navigation"
         minSdk = 21
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-        }
-    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -41,28 +33,13 @@ android {
             "-Xcontext-receivers",
         )
     }
-    buildFeatures {
-        viewBinding = true
-    }
 }
 
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.lifecycle.viewModel.ktx)
-    implementation(libs.androidx.activity.ktx)
-    implementation(project(":navigation"))
-    implementation(project(":nested"))
-    implementation(project(":design"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.test.core)
-    androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.androidx.test.rules)
-    androidTestImplementation(libs.androidx.test.junit.ext)
-    androidTestImplementation(libs.androidx.test.junit.ext.ktx)
     androidTestImplementation(libs.androidx.espresso.core)
 }

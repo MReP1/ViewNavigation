@@ -59,7 +59,7 @@ class AnimationParams private constructor(
 
         const val DEFAULT_DURATION = 321L
 
-        val DefaultAnimationParams = AnimationParams(
+        val HorizontalFadeAnimationParams = AnimationParams(
             duration = DEFAULT_DURATION,
             interpolator = LinearOutSlowInInterpolator(),
             enterAnimations = NavViewAnimation.HorizontalEnterViewAnimation
@@ -89,6 +89,8 @@ class AnimationParams private constructor(
             popEnterAnimations = NavViewAnimation.FadePopEnterViewAnimation,
             popExitAnimations = NavViewAnimation.FadePopExitViewAnimation
         )
+
+        val DefaultAnimationParams = HorizontalAnimationParams
 
         val NoAnimationParams = AnimationParams(
             duration = 0L,

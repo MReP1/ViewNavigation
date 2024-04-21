@@ -1,6 +1,7 @@
 package little.goose.navigation.app.activity
 
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
@@ -15,6 +16,8 @@ import little.goose.navigation.app.MainActivity
 import little.goose.navigation.app.MainTag
 import little.goose.navigation.app.MainValue
 import little.goose.navigation.app.R
+import little.goose.nested.NestedTag
+import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.not
@@ -49,7 +52,6 @@ class MainActivityTest {
             )
         }
 
-
         // check out screen two.
         val screenTwoTitle = onView(withTagValue(`is`(MainTag.ScreenTwo.TITLE)))
             .check(matches(withText(MainValue.SCREEN_TWO_TITLE_FROM_ONE)))
@@ -78,6 +80,47 @@ class MainActivityTest {
         onView(withId(R.id.tv_title))
             .check(matches(not(screenOneBeforeRecreate))) // ensure view recreate
             .check(matches(withText(MainValue.SCREEN_ONE_TITLE_FROM_THREE))) // ensure title restored
+
+        // navigate to screen three.
+        onView(withId(R.id.bt_nav_to_screen_two)).perform(click())
+        onView(withTagValue(`is`(MainTag.ScreenTwo.BUTTON_NAVIGATE_TO_COROUTINE)))
+            .perform(click())
+
+        // navigate to nested View
+        onView(withTagValue(`is`(MainTag.ScreenThree.BUTTON_NAVIGATE_TO_NESTED)))
+            .perform(click())
+
+        onView(withTagValue(`is`(NestedTag.BUTTON_ADD_ONE_REPEAT_VIEW)))
+            .perform(click())
+
+        // navigate to screen one.
+        onView(withTagValue(`is`("${NestedTag.BUTTON_POP_TO_SCREEN_ONE}_2")))
+            .perform(click())
+
+        // navigate to screen three.
+        onView(withId(R.id.bt_nav_to_screen_two)).perform(click())
+        onView(withTagValue(`is`(MainTag.ScreenTwo.BUTTON_NAVIGATE_TO_COROUTINE)))
+            .perform(click())
+
+        // navigate to nested View
+        onView(withTagValue(`is`(MainTag.ScreenThree.BUTTON_NAVIGATE_TO_NESTED)))
+            .perform(click())
+
+        onView(withTagValue(`is`(NestedTag.BUTTON_ADD_ONE_REPEAT_VIEW)))
+            .perform(click())
+
+        // then we nested three view.
+
+        pressBack()
+
+        onView(withTagValue(`is`(NestedTag.BUTTON_POP)))
+            .perform(click())
+            .perform(click())
+
+        // ensure we are in the screen three.
+        onView(withTagValue(`is`(MainTag.ScreenThree.TITLE)))
+            .check(matches(withText(containsString("collect count "))))
+
     }
 
 }

@@ -22,3 +22,5 @@ dependencyResolutionManagement {
 rootProject.name = "ViewNavigation"
 include(":app")
 include(":navigation")
+include(":nested")
+include(":design")

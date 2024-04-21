@@ -11,10 +11,13 @@ import little.goose.navigation.ViewNavigator
 import little.goose.navigation.ViewNavigatorController
 import little.goose.navigation.app.databinding.ScreenOneBinding
 import little.goose.navigation.app.component.CoroutineSampleViewController
-import little.goose.navigation.app.util.addButton
-import little.goose.navigation.app.util.addSpace
-import little.goose.navigation.app.util.addText
-import little.goose.navigation.app.util.linearLayout
+import little.goose.design.util.addButton
+import little.goose.design.util.addSpace
+import little.goose.design.util.addText
+import little.goose.design.util.dp
+import little.goose.design.util.linearLayout
+import little.goose.nested.ROUTE_NESTED_SCREEN
+import little.goose.nested.navNestedScreen
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,8 +43,10 @@ object MainRoute {
     const val SCREEN_ONE = "SCREEN_ONE"
     const val SCREEN_TWO = "SCREEN_TWO"
     const val SCREEN_COROUTINE_SAMPLE = "SCREEN_COROUTINE_SAMPLE"
+    const val SCREEN_NESTED = ROUTE_NESTED_SCREEN
 }
 
+// TAG for unit test.
 object MainTag {
     object ScreenTwo {
         const val TITLE = "screen_two_title"
@@ -50,7 +55,9 @@ object MainTag {
     }
 
     object ScreenThree {
-        const val BUTTON_BACK_TO_SCREEN_ONE = "screen_three_back_to_screen_one"
+        const val BUTTON_BACK_TO_SCREEN_ONE = "screen_three_button_back_to_screen_one"
+        const val BUTTON_NAVIGATE_TO_NESTED = "screen_three_button_navigate_to_screen_nested"
+        const val TITLE = "screen_three_title"
     }
 }
 
@@ -88,8 +95,9 @@ fun MainActivity.mainNavigator(): ViewNavigator {
             ScreenOneBinding.inflate(layoutInflater).apply {
                 btNavToScreenTwo.setOnClickListener {
                     navigateTo(MainRoute.SCREEN_TWO) {
-                        args =
-                            bundleOf(MainKey.SCREEN_TWO_TITLE to MainValue.SCREEN_TWO_TITLE_FROM_ONE)
+                        args = bundleOf(
+                            MainKey.SCREEN_TWO_TITLE to MainValue.SCREEN_TWO_TITLE_FROM_ONE
+                        )
                     }
                 }
             }
@@ -98,18 +106,20 @@ fun MainActivity.mainNavigator(): ViewNavigator {
         // Sample of a simple view without and logic.
         navView(MainRoute.SCREEN_TWO) { entry ->
             linearLayout(context, tag = MainTag.ScreenTwo.CONTAINER) {
-                addSpace(1F)
+                addSpace(24.dp)
                 addText(
                     text = entry.args?.getString(MainKey.SCREEN_TWO_TITLE) ?: "Unknown",
+                    textSize = 28F,
                     tag = MainTag.ScreenTwo.TITLE
                 )
+                addSpace(1F)
                 addButton(text = "Pop", onClick = ::pop)
                 addButton(
                     text = "Navigate to Coroutine Sample Screen",
                     tag = MainTag.ScreenTwo.BUTTON_NAVIGATE_TO_COROUTINE,
                     onClick = { navigateTo(MainRoute.SCREEN_COROUTINE_SAMPLE) }
                 )
-                addSpace(1F)
+                addSpace(60.dp)
             }
         }
 
@@ -123,8 +133,19 @@ fun MainActivity.mainNavigator(): ViewNavigator {
                             MainKey.SCREEN_ONE_TITLE to MainValue.SCREEN_ONE_TITLE_FROM_THREE
                         )
                     }
+                },
+                pop = ::pop,
+                navigateToNestedScreen = {
+                    navigateTo(MainRoute.SCREEN_NESTED)
                 }
             )
         }
+
+        // Nested screen from sub module.
+        navNestedScreen(
+            popToScreenOne = {
+                navController.popTo(MainRoute.SCREEN_ONE)
+            }
+        )
     }
 }
