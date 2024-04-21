@@ -56,13 +56,13 @@ internal class NavigatorRouterHolder(
                     entry.args = bundle
                 }
                 Log.d(TAG, "navView: getKey ${getKey(route, index)} ${entry.args}")
-                val cachedView = cachedViewMap["${route}_${index}"] as? T
+                val cachedView = cachedViewMap[route] as? T
                 if (cached && cachedView != null) {
                     cachedView.also { (it.parent as? ViewGroup)?.removeView(it) }
                 } else {
                     builder(entry).also { view ->
                         if (cached) {
-                            cachedViewMap["${route}_${index}"] = view
+                            cachedViewMap[route] = view
                         }
                     }
                 }.also { view ->

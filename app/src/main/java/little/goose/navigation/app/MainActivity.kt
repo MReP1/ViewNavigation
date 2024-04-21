@@ -137,6 +137,9 @@ fun MainActivity.mainNavigator(): ViewNavigator {
                 pop = ::pop,
                 navigateToNestedScreen = {
                     navigateTo(MainRoute.SCREEN_NESTED)
+                },
+                navigateToScreenOne = {
+                    navigateTo(MainRoute.SCREEN_ONE)
                 }
             )
         }

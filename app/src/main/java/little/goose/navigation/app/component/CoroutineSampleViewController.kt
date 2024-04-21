@@ -21,6 +21,7 @@ import little.goose.design.util.linearLayout
 class CoroutineSampleViewController(
     private val activity: MainActivity,
     private val pop: () -> Unit,
+    private val navigateToScreenOne: () -> Unit,
     private val popToOneWithParams: () -> Unit,
     private val navigateToNestedScreen: () -> Unit
 ) : ViewController<View>() {
@@ -61,6 +62,10 @@ class CoroutineSampleViewController(
                 text = "navigate to NestedViewNavigation",
                 onClick = navigateToNestedScreen,
                 tag = MainTag.ScreenThree.BUTTON_NAVIGATE_TO_NESTED
+            )
+            addButton(
+                text = "navigate to Screen one",
+                onClick = navigateToScreenOne
             )
             addSpace(60.dp)
         }
