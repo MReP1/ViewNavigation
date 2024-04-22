@@ -296,6 +296,14 @@ private inline fun initSavedStateAndGetRestoreRouter(
     routerStack: LinkedList<NavViewRouter>,
     getRouter: (String) -> NavViewRouter
 ): NavViewRouter? {
+    val restoreBundle = savedStateRegistry.consumeRestoredStateForKey(name)
+    if (savedStateRegistry.getSavedStateProvider(name) != null) {
+        // if a SavedStateRegistry contains multiple navigator with same name,
+        // will lead to crash.
+        // Such as more than one fragment contains same navigator.
+        // TODO How to deal with it?
+        savedStateRegistry.unregisterSavedStateProvider(name)
+    }
     savedStateRegistry.registerSavedStateProvider(name) {
         Bundle().apply {
             putStringArray(KEY_STACK, routerStack.map(NavViewRouter::route).toTypedArray())
@@ -312,7 +320,6 @@ private inline fun initSavedStateAndGetRestoreRouter(
             }
         }
     }
-    val restoreBundle = savedStateRegistry.consumeRestoredStateForKey(name)
     val stackArray = restoreBundle?.getStringArray(KEY_STACK) ?: return null
     stackArray.forEachIndexed { index, route ->
         val router: NavViewRouter = getRouter(route)
