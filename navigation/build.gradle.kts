@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    id("maven-publish")
+    `maven-publish`
 }
 
 android {
@@ -55,10 +55,10 @@ afterEvaluate {
     publishing {
         publications {
             create<MavenPublication>("release") {
-                from(components.getByName("release"))
+                from(components["release"])
                 groupId = "little.goose"
                 artifactId = "viewnavigation"
-                version = "1.0.4"
+                version = "1.0.6"
             }
         }
     }
