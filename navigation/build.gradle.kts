@@ -48,6 +48,7 @@ afterEvaluate {
     publishing {
         publications {
             register<MavenPublication>("release") {
+                from(components.getByName("release"))
                 groupId = "little.goose"
                 artifactId = "viewnavigation"
                 version = "1.0"
