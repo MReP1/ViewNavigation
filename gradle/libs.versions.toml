@@ -1,16 +1,16 @@
 [versions]
 agp = "8.3.2"
 kotlin = "1.9.22"
-coreKtx = "1.12.0"
+coreKtx = "1.13.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 appcompat = "1.6.1"
 material = "1.11.0"
-activity = "1.8.2"
+activity = "1.9.0"
 constraintlayout = "2.1.4"
 androidLifecycle = "2.7.0"
-androidxActivityKtx = "1.8.2"
+androidxActivityKtx = "1.9.0"
 androidxTestRunner = "1.5.2"
 androidxTestRules = "1.5.0"
 androidxTestCore = "1.5.0"
@@ -25,7 +25,6 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }
 androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidxTestRules" }
 androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
-androidx-test-junit-ext = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunitExt" }
 androidx-test-junit-ext-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxJunitExt" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }

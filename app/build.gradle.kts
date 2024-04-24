@@ -62,7 +62,6 @@ dependencies {
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
-    androidTestImplementation(libs.androidx.test.junit.ext)
     androidTestImplementation(libs.androidx.test.junit.ext.ktx)
     androidTestImplementation(libs.androidx.espresso.core)
 }

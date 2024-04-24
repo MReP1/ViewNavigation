@@ -2,7 +2,6 @@ package little.goose.navigation
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.annotation.MainThread
@@ -314,7 +313,6 @@ private inline fun initSavedStateAndGetRestoreRouter(
                 val args = router.getArgs(stackIndex)
                 if (args != null) {
                     val key = "${router.route}_$stackIndex"
-                    Log.d(TAG, "save bundle key: $key, save args: $args")
                     putBundle(key, args)
                 }
             }
@@ -326,7 +324,6 @@ private inline fun initSavedStateAndGetRestoreRouter(
         val stackIndex = stackArray.lastIndex - index
         val key = "${route}_$stackIndex"
         val restoredArgs = restoreBundle.getBundle(key)
-        Log.d(TAG, "get bundle key: $key, restore args: $restoredArgs")
         router.setArgs(stackIndex, restoredArgs)
         routerStack.add(router)
     }

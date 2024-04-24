@@ -1,7 +1,6 @@
 package little.goose.navigation
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnAttach
@@ -55,7 +54,6 @@ internal class NavigatorRouterHolder(
                 if (updateBundle) {
                     entry.args = bundle
                 }
-                Log.d(TAG, "navView: getKey ${getKey(route, index)} ${entry.args}")
                 val cachedView = cachedViewMap[route] as? T
                 (if (cached && cachedView != null) {
                     cachedView.also { (it.parent as? ViewGroup)?.removeView(it) }
