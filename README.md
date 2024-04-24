@@ -7,10 +7,10 @@ If you want to use DSL to define a navigation but can't use Jetpack Compose, may
 The reason for this library is because the communication between fragments is too complicated, we can put state flows down and events flow up to build a unidirectional data flow which can make code more maintainable. ref: [Architecting](https://developer.android.com/develop/ui/compose/architecture)
 
 ```Kotlin
-ViewNavigator(...) {
-   navView(SCREEN_ONE) { ... }
-   navViewBinding(SCREEN_TWO) { ... }
-   navViewController(SCREEN_THREE) { ... }
+ViewNavigator( /*...*/ ) {
+   navView(SCREEN_ONE) { /*...*/ }
+   navViewBinding(SCREEN_TWO) { /*...*/ }
+   navViewController(SCREEN_THREE) { /*...*/ }
 }
 ```
 
@@ -23,24 +23,23 @@ ViewNavigator(...) {
 
 1. add jitpack to your root repositories.
 
-```groovy
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
+   ```groovy
+   dependencyResolutionManagement {
+       repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+       repositories {
+           mavenCentral()
+           maven { url 'https://jitpack.io' }
+       }
+   }
+   ```
 
-2. add dependencies.
-
-[![](https://jitpack.io/v/FnGoose/ViewNavigation.svg)](https://jitpack.io/#FnGoose/ViewNavigation)
-```groovy
-dependencies {
-    implementation 'com.github.FnGoose:ViewNavigation:Version'
-}
-```
+2. add dependencies. [![](https://jitpack.io/v/FnGoose/ViewNavigation.svg)](https://jitpack.io/#FnGoose/ViewNavigation)
+   
+   ```groovy
+   dependencies {
+       implementation 'com.github.FnGoose:ViewNavigation:Version'
+   }
+   ```
 
 ## Start
 
@@ -57,7 +56,7 @@ dependencies {
    ) {
        navView("ScreenOne") {
            linearLayout(context) {
-               addButton("Navigate to Screen Two", onClick = { navController.navigateTo("ScreenTwo) })
+               addButton("Navigate to Screen Two", onClick = { navController.navigateTo("ScreenTwo") })
            }
        }
        navView("ScreenTwo") {
