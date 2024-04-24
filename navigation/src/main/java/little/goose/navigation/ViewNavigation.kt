@@ -9,8 +9,20 @@ import androidx.fragment.app.Fragment
 import androidx.savedstate.SavedStateRegistry
 import java.util.LinkedList
 
-private const val TAG = "ViewNavigator"
-
+/**
+ * View navigator
+ *
+ * create a ViewNavigator in Activity scope.
+ *
+ * @param name a unique name for the navigator.
+ * @param navController create by [ViewNavigatorController], you can use it to navigate.
+ * @param initRoute the initial route.
+ * @param initArgs the initial args for the first screen.
+ * @param defaultAnimations default animation params.
+ * @param builder builder for the navigator.
+ * @receiver
+ * @return
+ */
 @MainThread
 fun ComponentActivity.ViewNavigator(
     name: String,
@@ -28,6 +40,20 @@ fun ComponentActivity.ViewNavigator(
     initRoute, initArgs, builder
 )
 
+/**
+ * View navigator
+ *
+ * create a ViewNavigator in Fragment scope.
+ *
+ * @param name a unique name for the navigator.
+ * @param navController create by [ViewNavigatorController], you can use it to navigate.
+ * @param initRoute the initial route.
+ * @param initArgs the initial args for the first screen.
+ * @param defaultAnimations default animation params.
+ * @param builder builder for the navigator.
+ * @receiver
+ * @return
+ */
 @MainThread
 fun Fragment.ViewNavigator(
     name: String,
@@ -45,13 +71,27 @@ fun Fragment.ViewNavigator(
     initRoute, initArgs, builder
 )
 
+/**
+ * View navigator
+ *
+ * create a ViewNavigator in Activity scope.
+ *
+ * @param name a unique name for the navigator.
+ * @param navController create by [ViewNavigatorController], you can use it to navigate.
+ * @param initRoute the initial route.
+ * @param initArgs the initial args for the first screen.
+ * @param container container for the navigator, you can use your own container or default [ViewNavigationContainerLayout].
+ * @param builder builder for the navigator.
+ * @receiver
+ * @return
+ */
 @MainThread
 fun ComponentActivity.ViewNavigator(
+    name: String,
     navController: ViewNavigatorController,
     initRoute: String,
-    name: String,
-    container: ViewContainer<out View>,
     initArgs: Bundle? = null,
+    container: ViewContainer<out View>,
     builder: NavigatorScope.() -> Unit
 ): ViewNavigator = ViewNavigatorImpl(
     this, savedStateRegistry, name,
@@ -59,6 +99,20 @@ fun ComponentActivity.ViewNavigator(
     container, initRoute, initArgs, builder
 )
 
+/**
+ * View navigator
+ *
+ * create a ViewNavigator in Fragment scope.
+ *
+ * @param name a unique name for the navigator.
+ * @param navController create by [ViewNavigatorController], you can use it to navigate.
+ * @param initRoute the initial route.
+ * @param initArgs the initial args for the first screen.
+ * @param container container for the navigator, you can use your own container or default [ViewNavigationContainerLayout].
+ * @param builder builder for the navigator.
+ * @receiver
+ * @return
+ */
 @MainThread
 fun Fragment.ViewNavigator(
     name: String,
@@ -73,6 +127,20 @@ fun Fragment.ViewNavigator(
     container, initRoute, initArgs, builder
 )
 
+/**
+ * View navigator
+ *
+ * @param context use current Activity please.
+ * @param name a unique name for the navigator.
+ * @param navController create by [ViewNavigatorController], you can use it to navigate.
+ * @param initRoute the initial route.
+ * @param initArgs the initial args for the first screen.
+ * @param savedStateRegistry use to save state of route stack and args.
+ * @param defaultAnimations default animation params.
+ * @param builder builder for the navigator.
+ * @receiver
+ * @return
+ */
 @MainThread
 fun ViewNavigator(
     context: Context,
@@ -91,6 +159,20 @@ fun ViewNavigator(
     }, initRoute, initArgs, builder
 )
 
+/**
+ * View navigator
+ *
+ * @param context use current Activity please.
+ * @param name a unique name for the navigator.
+ * @param navController create by [ViewNavigatorController], you can use it to navigate.
+ * @param initRoute the initial route.
+ * @param initArgs the initial args for the first screen.
+ * @param savedStateRegistry use to save state of route stack and args.
+ * @param container container for the navigator, you can use your own container or default [ViewNavigationContainerLayout].
+ * @param builder builder for the navigator.
+ * @receiver
+ * @return
+ */
 @MainThread
 fun ViewNavigator(
     context: Context,

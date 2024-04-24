@@ -52,6 +52,9 @@ fun interface NavViewAnimation {
         height: Int
     )
 
+    /**
+     * you can use `+` operator to combine two animations.
+     */
     operator fun plus(other: NavViewAnimation): NavViewAnimation {
         return NavViewAnimation { view, progress, width, height ->
             this.onAnimate(view, progress, width, height)

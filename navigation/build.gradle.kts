@@ -63,7 +63,7 @@ afterEvaluate {
                 artifact(tasks["generateSourcesJar"])
                 groupId = "little.goose"
                 artifactId = "viewnavigation"
-                version = "1.0.7"
+                version = "1.0.8"
             }
         }
     }
