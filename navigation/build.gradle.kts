@@ -34,6 +34,12 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
@@ -44,11 +50,6 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
-tasks.register<Jar>("sourcesJar") {
-    archiveClassifier.set("sources")
-    from(android.sourceSets.getByName("main").java.srcDirs)
-}
-
 afterEvaluate {
     publishing {
         publications {
@@ -56,7 +57,7 @@ afterEvaluate {
                 from(components.getByName("release"))
                 groupId = "little.goose"
                 artifactId = "viewnavigation"
-                version = "1.0.3"
+                version = "1.0.4"
             }
         }
     }
