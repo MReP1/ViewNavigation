@@ -51,14 +51,19 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
+tasks.register<Jar>("generateSourcesJar") {
+    from(android.sourceSets["main"].java.srcDirs)
+}
+
 afterEvaluate {
     publishing {
         publications {
             create<MavenPublication>("release") {
                 from(components["release"])
+                artifact(tasks["generateSourcesJar"])
                 groupId = "little.goose"
                 artifactId = "viewnavigation"
-                version = "1.0.6"
+                version = "1.0.7"
             }
         }
     }
