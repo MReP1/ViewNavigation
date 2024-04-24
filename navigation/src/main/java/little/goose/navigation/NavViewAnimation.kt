@@ -19,6 +19,18 @@ inline fun horizontalTranslationViewAnimation(
     view.translationX = transform(progress, width, view.layoutDirection)
 }
 
+inline fun verticalViewAnimation(
+    crossinline transform: (progress: Float) -> Float
+) = verticalTranslationViewAnimation { progress, height ->
+    height * transform(progress)
+}
+
+inline fun verticalTranslationViewAnimation(
+    crossinline transform: (progress: Float, height: Int) -> Float
+) = NavViewAnimation { view, progress, _, height ->
+    view.translationY = transform(progress, height)
+}
+
 @PublishedApi
 internal val Int.ldFlag: Float
     get() = if (this == LayoutDirection.RTL) -1F else 1F
@@ -58,6 +70,14 @@ fun interface NavViewAnimation {
         val HorizontalPopEnterViewAnimation: NavViewAnimation = horizontalViewAnimation { it - 1F }
 
         val HorizontalPopExitViewAnimation: NavViewAnimation = horizontalViewAnimation { -it }
+
+        val VerticalEnterViewAnimation: NavViewAnimation = verticalViewAnimation { 1F - it }
+
+        val VerticalExitViewAnimation: NavViewAnimation = verticalViewAnimation { it }
+
+        val VerticalPopEnterViewAnimation: NavViewAnimation = verticalViewAnimation { it - 1F }
+
+        val VerticalPopExitViewAnimation: NavViewAnimation = verticalViewAnimation { -it }
 
         val FadeEnterViewAnimation: NavViewAnimation = alphaViewAnimation { it }
 

@@ -13,10 +13,44 @@ private const val TAG = "ViewNavigator"
 
 @MainThread
 fun ComponentActivity.ViewNavigator(
+    name: String,
+    navController: ViewNavigatorController,
+    initRoute: String,
+    initArgs: Bundle? = null,
+    defaultAnimations: AnimationParams = AnimationParams.DefaultAnimationParams,
+    builder: NavigatorScope.() -> Unit
+): ViewNavigator = ViewNavigatorImpl(
+    this, savedStateRegistry, name,
+    navController as ViewNavigatorControllerImpl,
+    ViewNavigationContainerLayout(this).apply {
+        animationParams = defaultAnimations
+    },
+    initRoute, initArgs, builder
+)
+
+@MainThread
+fun Fragment.ViewNavigator(
+    name: String,
+    navController: ViewNavigatorController,
+    initRoute: String,
+    initArgs: Bundle? = null,
+    defaultAnimations: AnimationParams = AnimationParams.DefaultAnimationParams,
+    builder: NavigatorScope.() -> Unit
+): ViewNavigator = ViewNavigatorImpl(
+    requireContext(), savedStateRegistry, name,
+    navController as ViewNavigatorControllerImpl,
+    ViewNavigationContainerLayout(requireContext()).apply {
+        animationParams = defaultAnimations
+    },
+    initRoute, initArgs, builder
+)
+
+@MainThread
+fun ComponentActivity.ViewNavigator(
     navController: ViewNavigatorController,
     initRoute: String,
     name: String,
-    container: ViewContainer<out View> = ViewNavigationContainerLayout(this),
+    container: ViewContainer<out View>,
     initArgs: Bundle? = null,
     builder: NavigatorScope.() -> Unit
 ): ViewNavigator = ViewNavigatorImpl(
@@ -27,11 +61,11 @@ fun ComponentActivity.ViewNavigator(
 
 @MainThread
 fun Fragment.ViewNavigator(
+    name: String,
     navController: ViewNavigatorController,
     initRoute: String,
-    name: String,
-    container: ViewContainer<out View> = ViewNavigationContainerLayout(requireContext()),
     initArgs: Bundle? = null,
+    container: ViewContainer<out View>,
     builder: NavigatorScope.() -> Unit
 ): ViewNavigator = ViewNavigatorImpl(
     requireContext(), savedStateRegistry, name,
@@ -45,9 +79,27 @@ fun ViewNavigator(
     name: String,
     navController: ViewNavigatorController,
     initRoute: String,
-    savedStateRegistry: SavedStateRegistry? = null,
-    container: ViewContainer<out View> = ViewNavigationContainerLayout(context),
     initArgs: Bundle? = null,
+    savedStateRegistry: SavedStateRegistry? = null,
+    defaultAnimations: AnimationParams = AnimationParams.DefaultAnimationParams,
+    builder: NavigatorScope.() -> Unit
+): ViewNavigator = ViewNavigatorImpl(
+    context, savedStateRegistry, name,
+    navController as ViewNavigatorControllerImpl,
+    ViewNavigationContainerLayout(context).apply {
+        animationParams = defaultAnimations
+    }, initRoute, initArgs, builder
+)
+
+@MainThread
+fun ViewNavigator(
+    context: Context,
+    name: String,
+    navController: ViewNavigatorController,
+    initRoute: String,
+    initArgs: Bundle? = null,
+    savedStateRegistry: SavedStateRegistry? = null,
+    container: ViewContainer<out View>,
     builder: NavigatorScope.() -> Unit
 ): ViewNavigator = ViewNavigatorImpl(
     context, savedStateRegistry, name,

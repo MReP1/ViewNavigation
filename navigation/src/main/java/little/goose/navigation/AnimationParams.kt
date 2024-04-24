@@ -3,6 +3,10 @@ package little.goose.navigation
 import android.animation.TimeInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 
+inline fun animationParams(block: AnimationParams.Builder.() -> Unit): AnimationParams {
+    return AnimationParams.Builder().apply(block).build()
+}
+
 class AnimationParams private constructor(
     val duration: Long,
     val interpolator: TimeInterpolator? = null,
@@ -12,46 +16,40 @@ class AnimationParams private constructor(
     val popExitAnimations: NavViewAnimation? = null,
 ) {
 
-    class Builder(private var duration: Long = 400L) {
-        private var interpolator: TimeInterpolator = LinearOutSlowInInterpolator()
-        private var enterAnimations: NavViewAnimation? = null
-        private var exitAnimations: NavViewAnimation? = null
-        private var popEnterAnimations: NavViewAnimation? = null
-        private var popExitAnimations: NavViewAnimation? = null
+    class Builder {
 
-        fun addViewNavAnimation(
-            enterAnimation: NavViewAnimation,
-            exitAnimation: NavViewAnimation,
-            popEnterAnimation: NavViewAnimation,
-            popExitAnimation: NavViewAnimation
-        ) = apply {
-            enterAnimations =
-                enterAnimations?.let { it + enterAnimation } ?: enterAnimation
-            exitAnimations =
-                exitAnimations?.let { it + exitAnimation } ?: exitAnimation
-            popEnterAnimations =
-                popEnterAnimations?.let { it + popEnterAnimation } ?: popEnterAnimation
-            popExitAnimations =
-                popExitAnimations?.let { it + popExitAnimation } ?: popExitAnimation
+        var duration: Long = 321L
+
+        var interpolator: TimeInterpolator = LinearOutSlowInInterpolator()
+
+        var enterAnimations: NavViewAnimation? = null
+
+        var exitAnimations: NavViewAnimation? = null
+
+        var popEnterAnimations: NavViewAnimation? = null
+
+        var popExitAnimations: NavViewAnimation? = null
+
+        fun build(): AnimationParams {
+            val containAnimations = enterAnimations != null
+                    || exitAnimations != null
+                    || popEnterAnimations != null
+                    || popExitAnimations != null
+
+            return AnimationParams(
+                duration = duration,
+                interpolator = interpolator,
+                enterAnimations = enterAnimations
+                    ?: (if (containAnimations) NavViewAnimation.EmptyViewAnimation else null),
+                exitAnimations = exitAnimations
+                    ?: (if (containAnimations) NavViewAnimation.EmptyViewAnimation else null),
+                popEnterAnimations = popEnterAnimations
+                    ?: (if (containAnimations) NavViewAnimation.EmptyViewAnimation else null),
+                popExitAnimations = popExitAnimations
+                    ?: (if (containAnimations) NavViewAnimation.EmptyViewAnimation else null)
+            )
+
         }
-
-        fun setDuration(duration: Long) {
-            require(duration >= 0)
-            this.duration = duration
-        }
-
-        fun setInterpolator(interpolator: TimeInterpolator) {
-            this.interpolator = interpolator
-        }
-
-        fun build() = AnimationParams(
-            duration = duration,
-            interpolator = interpolator,
-            enterAnimations = enterAnimations,
-            exitAnimations = exitAnimations,
-            popEnterAnimations = popEnterAnimations,
-            popExitAnimations = popExitAnimations
-        )
 
     }
 

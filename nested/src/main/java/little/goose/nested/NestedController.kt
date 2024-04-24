@@ -14,10 +14,13 @@ import little.goose.design.util.addText
 import little.goose.design.util.dp
 import little.goose.design.util.frameLayout
 import little.goose.design.util.linearLayout
+import little.goose.navigation.NavViewAnimation
 import little.goose.navigation.ViewController
 import little.goose.navigation.ViewNavigator
 import little.goose.navigation.ViewNavigatorController
 import little.goose.navigation.ViewStackEntry
+import little.goose.navigation.animationParams
+import little.goose.navigation.verticalViewAnimation
 
 object NestedRoute {
     const val REPEAT_VIEW = "nested_preview_view"
@@ -101,7 +104,18 @@ class NestedController(
         name = "NestedNavigator",
         navController = navController,
         initRoute = NestedRoute.REPEAT_VIEW,
-        savedStateRegistry = (context as? ComponentActivity)?.savedStateRegistry
+        savedStateRegistry = (context as? ComponentActivity)?.savedStateRegistry,
+        defaultAnimations = animationParams {
+            // set custom animation ...
+            enterAnimations = NavViewAnimation.VerticalEnterViewAnimation +
+                    NavViewAnimation.FadeEnterViewAnimation
+            exitAnimations = NavViewAnimation.VerticalExitViewAnimation +
+                    NavViewAnimation.FadeExitViewAnimation
+            popEnterAnimations = NavViewAnimation.VerticalPopEnterViewAnimation +
+                    NavViewAnimation.FadePopEnterViewAnimation
+            popExitAnimations = NavViewAnimation.VerticalPopExitViewAnimation +
+                    NavViewAnimation.FadePopExitViewAnimation
+        }
     ) {
         navView(
             route = NestedRoute.REPEAT_VIEW,
