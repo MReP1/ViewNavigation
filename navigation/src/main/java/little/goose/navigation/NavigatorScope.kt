@@ -13,7 +13,7 @@ interface NavigatorScope {
     fun <T : View> navView(
         route: String,
         cached: Boolean = true,
-        onAttach: (ViewNavigatorController.(T, ViewStackEntry) -> Unit)? = null,
+        update: (ViewNavigatorController.(T, ViewStackEntry) -> Unit)? = null,
         onDetach: ((T, ViewStackEntry) -> Unit)? = null,
         onPop: ((T, String?) -> Boolean)? = null,
         builder: ViewNavigatorController.(ViewStackEntry) -> T
@@ -21,7 +21,8 @@ interface NavigatorScope {
 
     fun <T : ViewBinding> navViewBinding(
         route: String,
-        onAttach: (ViewNavigatorController.(T, ViewStackEntry) -> Unit)? = null,
+        cached: Boolean = true,
+        update: (ViewNavigatorController.(T, ViewStackEntry) -> Unit)? = null,
         onDetach: ((T, ViewStackEntry) -> Unit)? = null,
         onPop: ((T, String?) -> Boolean)? = null,
         builder: ViewNavigatorController.(ViewStackEntry) -> T
@@ -29,6 +30,7 @@ interface NavigatorScope {
 
     fun <C : ViewController<V>, V : View> navViewController(
         route: String,
+        cached: Boolean = true,
         builder: ViewNavigatorController.(ViewStackEntry) -> C
     )
 

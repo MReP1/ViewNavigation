@@ -72,7 +72,7 @@ class MainActivityTest {
 
 
         // check args from screen three
-        val screenOneBeforeRecreate = onView(withId(R.id.tv_title))
+        var screenOneBeforeRecreate = onView(withId(R.id.tv_title))
             .check(matches(withText(MainValue.SCREEN_ONE_TITLE_FROM_THREE)))
 
         scenario.recreate()
@@ -121,6 +121,48 @@ class MainActivityTest {
         onView(withTagValue(`is`(MainTag.ScreenThree.TITLE)))
             .check(matches(withText(containsString("collect count "))))
 
+        repeat(2) {
+            // navigate to screen one.
+            onView(withTagValue(`is`(MainTag.ScreenThree.BUTTON_NAVIGATE_TO_SCREEN_ONE)))
+                .perform(click())
+            // navigate to screen three.
+            onView(withId(R.id.bt_nav_to_screen_two)).perform(click())
+            onView(withTagValue(`is`(MainTag.ScreenTwo.BUTTON_NAVIGATE_TO_COROUTINE)))
+                .perform(click())
+        }
+
+        // back to screen one
+        onView(withTagValue(`is`(MainTag.ScreenThree.BUTTON_BACK_TO_SCREEN_ONE)))
+            .perform(click())
+
+        scenario.recreate()
+
+        onView(withId(R.id.tv_title))
+            .check(matches(withText(MainValue.SCREEN_ONE_TITLE_FROM_THREE))) // ensure title restored
+
+        pressBack()
+        pressBack()
+        pressBack()
+
+        onView(withId(R.id.tv_title))
+            .check(matches(withText("Untitled"))) // ensure title restored
+
+        pressBack()
+
+        // back to screen one
+        onView(withTagValue(`is`(MainTag.ScreenThree.BUTTON_BACK_TO_SCREEN_ONE)))
+            .perform(click())
+
+
+        // check args from screen three
+        screenOneBeforeRecreate = onView(withId(R.id.tv_title))
+            .check(matches(withText(MainValue.SCREEN_ONE_TITLE_FROM_THREE)))
+
+        scenario.recreate()
+
+        onView(withId(R.id.tv_title))
+            .check(matches(not(screenOneBeforeRecreate))) // ensure view recreate
+            .check(matches(withText(MainValue.SCREEN_ONE_TITLE_FROM_THREE))) // ensure title restored
     }
 
 }

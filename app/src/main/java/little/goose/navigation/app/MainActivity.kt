@@ -57,6 +57,7 @@ object MainTag {
     object ScreenThree {
         const val BUTTON_BACK_TO_SCREEN_ONE = "screen_three_button_back_to_screen_one"
         const val BUTTON_NAVIGATE_TO_NESTED = "screen_three_button_navigate_to_screen_nested"
+        const val BUTTON_NAVIGATE_TO_SCREEN_ONE = "screen_three_button_navigate_to_screen_one"
         const val TITLE = "screen_three_title"
     }
 }
@@ -88,7 +89,7 @@ fun MainActivity.mainNavigator(): ViewNavigator {
         // Sample of Xml and ViewBinding
         navViewBinding(
             route = MainRoute.SCREEN_ONE,
-            onAttach = { binding, entry ->
+            update = { binding, entry ->
                 binding.tvTitle.text = entry.args?.getString(MainKey.SCREEN_ONE_TITLE) ?: "Untitled"
             }
         ) {

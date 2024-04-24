@@ -65,7 +65,8 @@ class CoroutineSampleViewController(
             )
             addButton(
                 text = "navigate to Screen one",
-                onClick = navigateToScreenOne
+                onClick = navigateToScreenOne,
+                tag = MainTag.ScreenThree.BUTTON_NAVIGATE_TO_SCREEN_ONE
             )
             addSpace(60.dp)
         }
