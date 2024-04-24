@@ -38,6 +38,7 @@ android {
     publishing {
         singleVariant("release") {
             withSourcesJar()
+            withJavadocJar()
         }
     }
 }
@@ -53,7 +54,7 @@ dependencies {
 afterEvaluate {
     publishing {
         publications {
-            register<MavenPublication>("release") {
+            create<MavenPublication>("release") {
                 from(components.getByName("release"))
                 groupId = "little.goose"
                 artifactId = "viewnavigation"
