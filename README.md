@@ -2,7 +2,7 @@
 
 A navigation library of View ui system which not supported in jetpack navigation.
 
-If you want to use DSL to define a navigation and can't use Jetpack Compose, maybe you should consider this library. But If you need to write so many logic in a router, I recommend you to use Navigation for fragment.
+If you want to use DSL to define a navigation but can't use Jetpack Compose, maybe you should consider this library. But If you need to write so many logic in a router, I recommend you to use Navigation for fragment which support DSL too.
 
 The reason for this library is because the communication between fragments is too complicated, we can put state flows down and events flow up to build a unidirectional data flow which can make code more maintainable. ref: [Architecting](https://developer.android.com/develop/ui/compose/architecture)
 
