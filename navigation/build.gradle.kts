@@ -17,7 +17,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -51,7 +51,7 @@ afterEvaluate {
                 from(components.getByName("release"))
                 groupId = "little.goose"
                 artifactId = "viewnavigation"
-                version = "1.0"
+                version = "1.0.2"
             }
         }
     }
