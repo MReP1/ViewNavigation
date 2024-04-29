@@ -221,7 +221,7 @@ sealed interface ViewNavigator {
      * when it called returning false, the real pop logic will be run.
      * null if there only one screen.
      */
-    var defaultOnPopListener: ((String?) -> Boolean)?
+    var defaultOnPopListener: ((String?) -> PopResult)?
 
     /**
      * Add route change listener, when current foreground route change,
@@ -287,7 +287,7 @@ private class ViewNavigatorImpl(
 
     override val currentView: View? get() = viewContainer.currentView
 
-    override var defaultOnPopListener: ((String?) -> Boolean)? = null
+    override var defaultOnPopListener: ((String?) -> PopResult)? = null
 
     init {
         containerView.tag = name
@@ -340,8 +340,14 @@ private class ViewNavigatorImpl(
 
     private fun pop(force: Boolean): Boolean {
         val targetRouter = routerStack.getOrNull(1)
-        if (!force && checkCurrentViewIntercept(null)) {
-            return true
+        if (!force) {
+            when (val popResult = checkCurrentViewIntercept(null)) {
+                PopResult.DoNothing -> Unit
+                PopResult.Intercept -> return true
+                is PopResult.Redirect -> {
+                    return popTo(popResult.targetRoute, true) {}
+                }
+            }
         }
         if (routerStack.size == 1 || targetRouter == null) {
             return onPopOutListeners.any { it() }
@@ -370,8 +376,14 @@ private class ViewNavigatorImpl(
         if (routerStack.indexOf(targetRouter) == -1) {
             return false
         }
-        if (!force && checkCurrentViewIntercept(targetRouter.route)) {
-            return true
+        if (!force) {
+            when (val popResult = checkCurrentViewIntercept(targetRouter.route)) {
+                PopResult.DoNothing -> Unit
+                PopResult.Intercept -> return true
+                is PopResult.Redirect -> {
+                    return popTo(popResult.targetRoute, true) {}
+                }
+            }
         }
         var router: NavViewRouter?
         var routerIndex: Int
@@ -395,12 +407,13 @@ private class ViewNavigatorImpl(
     }
 
 
-    private fun checkCurrentViewIntercept(targetRoute: String?): Boolean {
-        var isIntercept = navigatorRouterHolder.currentOnPop?.invoke(targetRoute) ?: false
-        if (!isIntercept) {
-            isIntercept = defaultOnPopListener?.invoke(targetRoute) ?: false
+    private fun checkCurrentViewIntercept(targetRoute: String?): PopResult {
+        var popResult = navigatorRouterHolder.currentOnPop?.invoke(targetRoute)
+            ?: PopResult.DoNothing
+        if (popResult == PopResult.DoNothing) {
+            popResult = defaultOnPopListener?.invoke(targetRoute) ?: PopResult.DoNothing
         }
-        return isIntercept
+        return popResult
     }
 
     override fun addRouteChangeListener(listener: OnNavViewRouteChangeListener) {
@@ -435,7 +448,9 @@ private inline fun initSavedStateAndGetRestoreRouter(
         // will lead to crash.
         // Such as more than one fragment contains same navigator.
         // TODO How to deal with it?
-        savedStateRegistry.unregisterSavedStateProvider(name)
+        throw IllegalArgumentException(
+            "Do not create multi ViewNavigator with same name in a savedStateRegistry (UI Context)"
+        )
     }
     savedStateRegistry.registerSavedStateProvider(name) {
         Bundle().apply {

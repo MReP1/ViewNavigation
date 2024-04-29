@@ -15,7 +15,7 @@ interface NavigatorScope {
         cached: Boolean = true,
         update: (ViewNavigatorController.(T, ViewStackEntry) -> Unit)? = null,
         onDetach: ((T, ViewStackEntry) -> Unit)? = null,
-        onPop: ((T, String?) -> Boolean)? = null,
+        onPop: ((T, String?) -> PopResult)? = null,
         builder: ViewNavigatorController.(ViewStackEntry) -> T
     )
 
@@ -24,7 +24,7 @@ interface NavigatorScope {
         cached: Boolean = true,
         update: (ViewNavigatorController.(T, ViewStackEntry) -> Unit)? = null,
         onDetach: ((T, ViewStackEntry) -> Unit)? = null,
-        onPop: ((T, String?) -> Boolean)? = null,
+        onPop: ((T, String?) -> PopResult)? = null,
         builder: ViewNavigatorController.(ViewStackEntry) -> T
     )
 

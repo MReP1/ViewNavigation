@@ -13,7 +13,7 @@ internal class NavigatorRouterHolder(
 
     private val routerMap = mutableMapOf<String, NavViewRouter>()
 
-    internal var currentOnPop: ((String?) -> Boolean)? = null
+    internal var currentOnPop: ((String?) -> PopResult)? = null
 
     internal fun getRouter(route: String): NavViewRouter {
         return requireNotNull(routerMap[route]) { "You have not set route $route yet." }
@@ -36,7 +36,7 @@ internal class NavigatorRouterHolder(
         cached: Boolean,
         update: (ViewNavigatorController.(T, ViewStackEntry) -> Unit)?,
         onDetach: ((T, ViewStackEntry) -> Unit)?,
-        onPop: ((T, String?) -> Boolean)?,
+        onPop: ((T, String?) -> PopResult)?,
         builder: ViewNavigatorController.(ViewStackEntry) -> T
     ) {
         navViewController(
@@ -56,8 +56,8 @@ internal class NavigatorRouterHolder(
                         update?.invoke(this@navViewController, view, entry)
                     }
 
-                    override fun onPop(view: T, targetRoute: String?): Boolean {
-                        return onPop?.invoke(view, targetRoute) ?: false
+                    override fun onPop(view: T, targetRoute: String?): PopResult {
+                        return onPop?.invoke(view, targetRoute) ?: PopResult.DoNothing
                     }
                 }
             }
@@ -69,7 +69,7 @@ internal class NavigatorRouterHolder(
         cached: Boolean,
         update: (ViewNavigatorController.(T, ViewStackEntry) -> Unit)?,
         onDetach: ((T, ViewStackEntry) -> Unit)?,
-        onPop: ((T, String?) -> Boolean)?,
+        onPop: ((T, String?) -> PopResult)?,
         builder: ViewNavigatorController.(ViewStackEntry) -> T
     ) {
         navViewController(
@@ -95,10 +95,10 @@ internal class NavigatorRouterHolder(
                         }
                     }
 
-                    override fun onPop(view: View, targetRoute: String?): Boolean {
+                    override fun onPop(view: View, targetRoute: String?): PopResult {
                         return (this.cacheViewBinding as? T)?.let { viewBinding ->
-                            onPop?.invoke(viewBinding, targetRoute) ?: false
-                        } ?: false
+                            onPop?.invoke(viewBinding, targetRoute) ?: PopResult.DoNothing
+                        } ?: PopResult.DoNothing
                     }
                 }
             }

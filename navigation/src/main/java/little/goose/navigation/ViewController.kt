@@ -13,8 +13,8 @@ abstract class ViewController<V : View> {
 
     abstract fun onDetach(view: V, entry: ViewStackEntry)
 
-    open fun onPop(view: V, targetRoute: String?): Boolean {
-        return false
+    open fun onPop(view: V, targetRoute: String?): PopResult {
+        return PopResult.DoNothing
     }
 
 }

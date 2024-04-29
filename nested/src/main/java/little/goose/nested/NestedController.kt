@@ -15,12 +15,12 @@ import little.goose.design.util.dp
 import little.goose.design.util.frameLayout
 import little.goose.design.util.linearLayout
 import little.goose.navigation.NavViewAnimation
+import little.goose.navigation.PopResult
 import little.goose.navigation.ViewController
 import little.goose.navigation.ViewNavigator
 import little.goose.navigation.ViewNavigatorController
 import little.goose.navigation.ViewStackEntry
 import little.goose.navigation.animationParams
-import little.goose.navigation.verticalViewAnimation
 
 object NestedRoute {
     const val REPEAT_VIEW = "nested_preview_view"
@@ -163,12 +163,16 @@ class NestedController(
 
     }
 
-    override fun onPop(view: View, targetRoute: String?): Boolean {
-        var popRet = false
+    override fun onPop(view: View, targetRoute: String?): PopResult {
+        var popRet: PopResult = PopResult.DoNothing
         if (targetRoute == null) {
-            popRet = navController?.pop() ?: false
+            popRet = if (navController?.pop() == true) {
+                PopResult.Intercept
+            } else {
+                PopResult.DoNothing
+            }
         }
-        if (!popRet) {
+        if (popRet == PopResult.DoNothing) {
             popRet = super.onPop(view, targetRoute)
         }
         return popRet

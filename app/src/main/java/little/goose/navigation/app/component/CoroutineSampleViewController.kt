@@ -17,6 +17,7 @@ import little.goose.design.util.addButton
 import little.goose.design.util.addSpace
 import little.goose.design.util.dp
 import little.goose.design.util.linearLayout
+import little.goose.navigation.PopResult
 
 class CoroutineSampleViewController(
     private val activity: MainActivity,
@@ -85,7 +86,7 @@ class CoroutineSampleViewController(
 
     }
 
-    override fun onPop(view: View, targetRoute: String?): Boolean {
+    override fun onPop(view: View, targetRoute: String?): PopResult {
         return super.onPop(view, targetRoute)
     }
 }
