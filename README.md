@@ -2,6 +2,8 @@ A navigation library of View ui system which not supported in jetpack navigation
 
 If you want to use DSL to define a navigation but can't use Jetpack Compose, maybe you should consider this library. But If you need to write so many logic in a router, I recommend you to use Navigation for fragment which support DSL too.
 
+![Choose Navigation](docs/Choose.png)
+
 The reason for this library is because the communication between fragments is too complicated, we can put state flows down and events flow up to build a unidirectional data flow which can make code more maintainable. ref: [Architecting](https://developer.android.com/develop/ui/compose/architecture "Architecting")
 
 ```kotlin
@@ -118,9 +120,9 @@ class NestedController(
 
     private var subNavController: ViewNavigatorController? = null
    
-    override fun onPop(view: View, targetRoute: String?): Boolean {
+    override fun onPop(view: View, targetRoute: String?): PopResult {
         val subPopRet = subNavController.pop()
-        if (!subPopRet) {
+        if (subPopRet == PopResult.DoNothing) {
             // current pop logc.
         }
         return super.onPop(view, targerRoute)
@@ -187,7 +189,7 @@ inline fun verticalTranslationViewAnimation(
 }
 ```
 
-also you can comine two animation with \`+\`
+also you can comine two animation with `+`
 
 ```kotlin
 NavViewAnimation.HorizontalEnterViewAnimation + NavViewAnimation.FadeEnterViewAnimation
@@ -195,10 +197,29 @@ NavViewAnimation.HorizontalEnterViewAnimation + NavViewAnimation.FadeEnterViewAn
 
 ## Custom View Container (ViewGroup)
 
-TODO progress ...
+I do support you to use official ViewGroup ViewNavigationContainerLayout, but you can define a custom Container if you want.
+
+You need to implement ViewContainer to make your specific view container.
+
+```kotlin
+interface ViewContainer<V : View> {
+    /* ... */
+}
+```
 
 ## Add listener
+You can also add some listener to listen something of ViewNavigation. such as route change, pop out.
 
-TODO...
+```kotlin
+
+viewNavigation.addRouteChangeListener { oldRoute: String, newRoute: String ->
+    Log.d(TAG, "oldRoute: $oldRoute, newRoute: $newRoute")
+}
+
+viewNavigator.addOnPopOutListener {
+    // finish activity or other...
+    finish()
+}
+```
 
 
