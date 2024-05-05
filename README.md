@@ -122,7 +122,7 @@ class NestedController(
    
     override fun onPop(view: View, targetRoute: String?): PopResult {
         val subPopRet = subNavController.pop()
-        if (subPopRet == PopResult.DoNothing) {
+        if (subPopRet) {
             // current pop logc.
         }
         return super.onPop(view, targerRoute)
